@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8" />
+  <title>MovilCellApp</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --dark-color: #212529;
+      --border-color: #dee2e6;
+      --transition: all 0.3s ease;
+    }
+
+    /* Usar Flexbox para el layout de la página */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh; /* Ocupar el 100% de la altura de la ventana */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden; /* Evitar que la página principal tenga scroll */
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: #f0f2f5;
+    }
+
+    #navbar {
+      display: flex;
+      gap: 10px;
+      padding: 10px 15px;
+      background-color: #ffffff;
+      border-bottom: 1px solid var(--border-color);
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      z-index: 10;
+      position: relative;
+      flex-shrink: 0; /* Asegura que el navbar no se encoja */
+    }
+
+    .logo {
+      height: 30px;
+      margin-right: auto;
+    }
+
+    .nav-pills {
+      display: flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .nav-item {
+      margin: 0 2px;
+    }
+
+    .nav-link {
+      color: var(--dark-color);
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 50rem;
+      padding: 6px 14px;
+      transition: var(--transition);
+      font-size: 14px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .nav-link.active,
+    .nav-link:hover {
+      color: white;
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      box-shadow: 0 2px 5px rgba(67, 97, 238, 0.3);
+    }
+
+    #iframe-wrapper {
+      flex-grow: 1; /* Ocupa todo el espacio vertical restante */
+      overflow: hidden; /* Oculta la parte del iframe que se desborde */
+      border: none;
+      position: relative;
+    }
+
+    iframe {
+      width: 100%;
+      height: calc(100% + 65px); /* Alto para compensar el desplazamiento. Ajusta los 65px si es necesario */
+      border: none;
+      transform: translateY(-65px); /* Desplaza el iframe hacia arriba para ocultar la navbar interna */
+    }
+
+    #loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #loading-message {
+      background-color: white;
+      padding: 20px 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="navbar">
+    <img src="https://raw.githubusercontent.com/Turnotrack/MovilCell/main/logos/logomc.png" alt="Logo Movil Cell" class="logo">
+    
+    <ul class="nav nav-pills">
+      <li class="nav-item"><a class="nav-link active" onclick="cargarModulo('index', this)"><i class="fas fa-home"></i> Inicio</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('gestionReparaciones', this)"><i class="fas fa-list-check"></i> Reparaciones</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('reparacionesDelDia', this)"><i class="fas fa-calendar-day"></i> Reparaciones del Día</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('ventasDelDia', this)"><i class="fas fa-cash-register"></i> Ventas del Día</a></li>
+      
+      <!-- BOTÓN NUEVO AÑADIDO AQUÍ -->
+      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('gestionCreditos', this)"><i class="fas fa-file-invoice-dollar"></i> Gestión Créditos</a></li>
+
+      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('inventario', this)"><i class="fas fa-boxes"></i> Inventario</a></li>
+      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('dashboard', this)"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+    </ul>
+  </div>
+
+  <div id="iframe-wrapper">
+    <iframe id="iframeApp" scrolling="yes"></iframe>
+  </div>
+
+  <div id="loading-overlay">
+    <div id="loading-message">
+      <div class="spinner-border text-primary" role="status"></div>
+      <span>Cargando...</span>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = "https://script.google.com/macros/s/AKfycbym5SxYBxRIpXbDe3PMbLtx3CriBJKcPH8XFjVGvpOCciIGFIT8gl5-BhxsxkqFJOTB/exec";
+    const iframe = document.getElementById("iframeApp");
+    const loadingOverlay = document.getElementById("loading-overlay");
+
+    function cargarModulo(nombrePagina, elementoClicado) {
+      loadingOverlay.style.display = "flex";
+      iframe.src = `${BASE_URL}?page=${nombrePagina}`;
+
+      document.querySelectorAll('#navbar .nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      if (elementoClicado) {
+        elementoClicado.classList.add('active');
+      }
+    }
+
+    iframe.onload = function() {
+      loadingOverlay.style.display = "none";
+    };
+
+    window.onload = () => {
+      cargarModulo("index", document.querySelector('#navbar .nav-link.active'));
+    };
+  </script>
+
+</body>
+</html>

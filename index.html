@@ -168,11 +168,46 @@
       }
     }
 
+    // ==================================================================
+    // === NUEVO BLOQUE PARA MANEJAR LA AUTORIZACIÓN REQUERIDA =========
+    // ==================================================================
+    window.addEventListener('message', function(event) {
+      // Por seguridad, es una buena práctica verificar el origen, aunque aquí lo omitimos por simplicidad.
+      // if (event.origin !== "https://script.google.com") return;
+
+      // Comprueba si el mensaje del iframe indica que se requiere autorización.
+      if (event.data && event.data.type === 'authRequired') {
+        loadingOverlay.style.display = "none"; // Ocultar el spinner de carga
+
+        // Abre la URL de autorización de Google en una nueva pestaña del navegador.
+        window.open(event.data.url, '_blank');
+        
+        // Reemplaza el iframe con un mensaje útil para el usuario.
+        document.getElementById('iframe-wrapper').innerHTML = `
+          <div style="padding: 40px; text-align: center; font-family: 'Inter', sans-serif;">
+            <h2 style="color: #333;">Se requiere autorización</h2>
+            <p style="color: #555; line-height: 1.6;">Para continuar, por favor completa el inicio de sesión y autoriza la aplicación en la <b>nueva pestaña</b> que se ha abierto.</p>
+            <p style="color: #555; line-height: 1.6;">Una vez que hayas terminado, haz clic en el botón de abajo para recargar.</p>
+            <br>
+            <a href="#" onclick="location.reload()" style="background-color: var(--primary-color); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: 500;">
+              Recargar la aplicación
+            </a>
+          </div>
+        `;
+      }
+    });
+    // ==================================================================
+    // === FIN DEL NUEVO BLOQUE =========================================
+    // ==================================================================
+
     iframe.onload = function() {
+      // Esto ocultará el spinner después de que el iframe cargue correctamente
+      // o después de que se muestre el mensaje de error de autorización.
       loadingOverlay.style.display = "none";
     };
 
     window.onload = () => {
+      // Carga el módulo inicial cuando la página se abre por primera vez.
       cargarModulo("index", document.querySelector('#navbar .nav-link.active'));
     };
   </script>

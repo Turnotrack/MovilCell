@@ -3,212 +3,241 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8" />
-  <title>MovilCellApp</title>
+  <title>MovilCellApp - Navegación Activa</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #4361ee;
+      --primary-color: #0d6efd;
       --dark-color: #212529;
       --border-color: #dee2e6;
-      --transition: all 0.3s ease;
+      --transition: all 0.2s ease-in-out;
     }
-
-    /* Usar Flexbox para el layout de la página */
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100vh; /* Ocupar el 100% de la altura de la ventana */
-      display: flex;
-      flex-direction: column;
-      overflow: hidden; /* Evitar que la página principal tenga scroll */
-      font-family: 'Inter', Arial, sans-serif;
-      background-color: #f0f2f5;
-    }
-
-    #navbar {
-      display: flex;
-      gap: 10px;
-      padding: 10px 15px;
-      background-color: #ffffff;
-      border-bottom: 1px solid var(--border-color);
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      z-index: 10;
-      position: relative;
-      flex-shrink: 0; /* Asegura que el navbar no se encoja */
-    }
-
-    .logo {
-      height: 30px;
-      margin-right: auto;
-    }
-
-    .nav-pills {
-      display: flex;
-      list-style: none;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column;
+      overflow: hidden; font-family: 'Inter', Arial, sans-serif; background-color: #f0f2f5;
     }
     
-    .nav-item {
-      margin: 0 2px;
+    #navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 20px; padding: 10px 25px; background-color: #ffffff;
+      border-bottom: 1px solid var(--border-color); z-index: 10; position: relative; flex-shrink: 0;
     }
-
+    .logo-container { display: flex; align-items: center; gap: 12px; }
+    .logo { height: 35px; }
+    .logo-container .title { font-size: 20px; font-weight: 600; color: var(--dark-color); }
+    .nav-pills { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; gap: 10px; }
+    .nav-item { margin: 0; }
+    
     .nav-link {
-      color: var(--dark-color);
-      background-color: #f5f5f5;
-      border: 1px solid #ddd;
-      border-radius: 50rem;
-      padding: 6px 14px;
-      transition: var(--transition);
-      font-size: 14px;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      text-decoration: none;
-      white-space: nowrap;
-      cursor: pointer;
+      transition: var(--transition); font-size: 14px; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; white-space: nowrap; cursor: pointer;
+      border-radius: 8px; border: 1px solid transparent;
+      padding: 8px 12px;
     }
+    .nav-main-link { color: var(--primary-color); background-color: transparent; }
+    .nav-main-link:not(.active):hover { background-color: #e9ecef; }
+    .nav-main-link.active { background-color: var(--dark-color); color: white; }
+    .nav-main-link.active:hover { background-color: #3e4347; }
+    .btn-outline { border-color: #ced4da; color: var(--dark-color); }
+    .btn-outline:hover { background-color: #f8f9fa; }
 
-    .nav-link.active,
-    .nav-link:hover {
-      color: white;
-      background-color: var(--primary-color);
-      border-color: var(--primary-color);
-      box-shadow: 0 2px 5px rgba(67, 97, 238, 0.3);
-    }
-
-    #iframe-wrapper {
-      flex-grow: 1; /* Ocupa todo el espacio vertical restante */
-      overflow: hidden; /* Oculta la parte del iframe que se desborde */
-      border: none;
-      position: relative;
-    }
-
-    iframe {
-      width: 100%;
-      height: calc(100% + 65px); /* Alto para compensar el desplazamiento. Ajusta los 65px si es necesario */
-      border: none;
-      transform: translateY(-65px); /* Desplaza el iframe hacia arriba para ocultar la navbar interna */
-    }
-
+    #iframe-container { flex-grow: 1; overflow: hidden; border: none; position: relative; }
+    .iframe-wrapper { width: 100%; height: 100%; position: absolute; top: 0; left: 0; visibility: hidden; }
+    .iframe-wrapper.active { visibility: visible; }
+    iframe { width: 100%; height: calc(100% + 65px); border: none; transform: translateY(-65px); }
+    
+    /* --- INICIO: ESTILOS DE LA NUEVA ANIMACIÓN DE CARGA --- */
+    
+    /* Contenedor principal del overlay de carga */
     #loading-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: #ffffff; /* Fondo sólido para ocultar todo */
       z-index: 9999;
-      display: none;
+      display: none; /* Se activa con JS */
       justify-content: center;
       align-items: center;
+      flex-direction: column;
+      transition: opacity 0.3s ease-in-out;
     }
-
-    #loading-message {
-      background-color: white;
-      padding: 20px 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      display: flex;
+    
+    /* Contenedor para la animación INICIAL */
+    #initial-load-animation {
+      display: none; /* Se gestiona con JS */
+      flex-direction: column;
       align-items: center;
-      gap: 15px;
-      font-size: 16px;
-      font-weight: 500;
+      gap: 25px;
     }
+    
+    /* El logo animado */
+    .animated-logo {
+      width: 120px;
+      height: auto;
+      animation: logo-pulse 2s ease-in-out infinite;
+    }
+    
+    /* El texto debajo del logo */
+    .loading-text-fancy {
+      font-size: 18px;
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    /* La animación de pulso para el logo */
+    @keyframes logo-pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+      50% {
+        transform: scale(1.08);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+    }
+    
+    /* Mensaje de carga para "Sincronizar" (más simple) */
+    #sync-load-message {
+      display: none; /* Se gestiona con JS */
+      background-color: white; padding: 20px 30px; border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      align-items: center; gap: 15px; font-size: 16px; font-weight: 500;
+    }
+    /* --- FIN: ESTILOS DE LA NUEVA ANIMACIÓN DE CARGA --- */
 
   </style>
 </head>
 <body>
 
   <div id="navbar">
-    <img src="https://raw.githubusercontent.com/Turnotrack/MovilCell/main/logos/logomc.png" alt="Logo Movil Cell" class="logo">
+    <div class="logo-container">
+      <img src="https://raw.githubusercontent.com/Turnotrack/MovilCell/main/logos/logomc.png" alt="Logo Movil Cell" class="logo">
+      <span class="title">Servicio Técnico</span>
+    </div>
     
     <ul class="nav nav-pills">
-      <li class="nav-item"><a class="nav-link active" onclick="cargarModulo('index', this)"><i class="fas fa-home"></i> Inicio</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('gestionReparaciones', this)"><i class="fas fa-list-check"></i> Reparaciones</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('reparacionesDelDia', this)"><i class="fas fa-calendar-day"></i> Reparaciones del Día</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('ventasDelDia', this)"><i class="fas fa-cash-register"></i> Ventas del Día</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link active" data-page="index" onclick="cambiarVista('index', this)"><i class="fas fa-home"></i> INICIO</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="gestionReparaciones" onclick="cambiarVista('gestionReparaciones', this)"><i class="fas fa-list-check"></i> REPARACIONES</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="reparacionesDelDia" onclick="cambiarVista('reparacionesDelDia', this)"><i class="fas fa-calendar-day"></i> REPARACIONES DEL DÍA</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="ventasDelDia" onclick="cambiarVista('ventasDelDia', this)"><i class="fas fa-cash-register"></i> VENTAS</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="gestionCreditos" onclick="cambiarVista('gestionCreditos', this)"><i class="fas fa-file-invoice-dollar"></i> CRÉDITOS</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="inventario" onclick="cambiarVista('inventario', this)"><i class="fas fa-boxes"></i> INVENTARIO</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="dashboard" onclick="cambiarVista('dashboard', this)"><i class="fas fa-chart-line"></i> DASHBOARD</a></li>
       
-      <!-- BOTÓN NUEVO AÑADIDO AQUÍ -->
-      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('gestionCreditos', this)"><i class="fas fa-file-invoice-dollar"></i> Gestión Créditos</a></li>
-
-      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('inventario', this)"><i class="fas fa-boxes"></i> Inventario</a></li>
-      <li class="nav-item"><a class="nav-link" onclick="cargarModulo('dashboard', this)"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+      <li class="nav-item" style="margin-left:15px;"><a class="nav-link btn-outline" onclick="sincronizarAplicacion()"><i class="fas fa-sync-alt"></i> Sincronizar</a></li>
     </ul>
   </div>
 
-  <div id="iframe-wrapper">
-    <iframe id="iframeApp" scrolling="yes"></iframe>
+  <div id="iframe-container">
+    <div id="wrapper-index" class="iframe-wrapper active"><iframe id="iframe-index" scrolling="yes"></iframe></div>
+    <div id="wrapper-gestionReparaciones" class="iframe-wrapper"><iframe id="iframe-gestionReparaciones" scrolling="yes"></iframe></div>
+    <div id="wrapper-reparacionesDelDia" class="iframe-wrapper"><iframe id="iframe-reparacionesDelDia" scrolling="yes"></iframe></div>
+    <div id="wrapper-ventasDelDia" class="iframe-wrapper"><iframe id="iframe-ventasDelDia" scrolling="yes"></iframe></div>
+    <div id="wrapper-gestionCreditos" class="iframe-wrapper"><iframe id="iframe-gestionCreditos" scrolling="yes"></iframe></div>
+    <div id="wrapper-inventario" class="iframe-wrapper"><iframe id="iframe-inventario" scrolling="yes"></iframe></div>
+    <div id="wrapper-dashboard" class="iframe-wrapper"><iframe id="iframe-dashboard" scrolling="yes"></iframe></div>
   </div>
 
+  <!-- ESTRUCTURA HTML DEL OVERLAY ACTUALIZADA -->
   <div id="loading-overlay">
-    <div id="loading-message">
-      <div class="spinner-border text-primary" role="status"></div>
-      <span>Cargando...</span>
+    <!-- Animación para la carga inicial -->
+    <div id="initial-load-animation">
+      <img src="https://raw.githubusercontent.com/Turnotrack/MovilCell/main/logos/logomc.png" alt="Cargando MovilCell App" class="animated-logo">
+      <span class="loading-text-fancy">Cargando aplicación...</span>
+    </div>
+    <!-- Mensaje para la sincronización manual -->
+    <div id="sync-load-message">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span id="sync-text">Sincronizando y actualizando datos...</span>
     </div>
   </div>
 
   <script>
     const BASE_URL = "https://script.google.com/macros/s/AKfycbym5SxYBxRIpXbDe3PMbLtx3CriBJKcPH8XFjVGvpOCciIGFIT8gl5-BhxsxkqFJOTB/exec";
-    const iframe = document.getElementById("iframeApp");
+    const UMBRAL_RECARGA_MS = 60000;
+    
+    // Referencias a los elementos del DOM
     const loadingOverlay = document.getElementById("loading-overlay");
+    const initialLoadAnimation = document.getElementById("initial-load-animation");
+    const syncLoadMessage = document.getElementById("sync-load-message");
+    const syncText = document.getElementById("sync-text");
+    const pageLinks = document.querySelectorAll('.nav-main-link[data-page]');
 
-    function cargarModulo(nombrePagina, elementoClicado) {
+    let paginaActivaAnterior = null;
+    let tiempoEntradaPagina = null;
+
+    function cambiarVista(nombrePagina, elementoClicado) {
+      const ahora = Date.now();
+      if (paginaActivaAnterior && (ahora - tiempoEntradaPagina > UMBRAL_RECARGA_MS) && paginaActivaAnterior !== nombrePagina && paginaActivaAnterior !== 'index') {
+        const iframeARecargar = document.getElementById(`iframe-${paginaActivaAnterior}`);
+        if (iframeARecargar) {
+          console.log(`Recargando en segundo plano '${paginaActivaAnterior}' porque se abandonó después de ${UMBRAL_RECARGA_MS / 1000}s.`);
+          iframeARecargar.src = `${BASE_URL}?page=${paginaActivaAnterior}&v=${Date.now()}`;
+        }
+      }
+
+      document.querySelectorAll('.iframe-wrapper').forEach(wrapper => wrapper.classList.remove('active'));
+      document.getElementById(`wrapper-${nombrePagina}`).classList.add('active');
+      
+      pageLinks.forEach(link => link.classList.remove('active'));
+      if (elementoClicado) elementoClicado.classList.add('active');
+
+      paginaActivaAnterior = nombrePagina;
+      tiempoEntradaPagina = Date.now();
+    }
+    
+    function cargarTodosLosIframes(esSincronizacion = false) {
+      // --- LÓGICA DE VISUALIZACIÓN DE CARGA MODIFICADA ---
       loadingOverlay.style.display = "flex";
-      iframe.src = `${BASE_URL}?page=${nombrePagina}`;
+      
+      if (esSincronizacion) {
+        // Si es una sincronización manual, muestra el spinner simple
+        initialLoadAnimation.style.display = "none";
+        syncLoadMessage.style.display = "flex";
+        syncText.textContent = "Sincronizando y actualizando datos...";
+      } else {
+        // Si es la carga inicial, muestra la nueva animación con el logo
+        initialLoadAnimation.style.display = "flex";
+        syncLoadMessage.style.display = "none";
+      }
 
-      document.querySelectorAll('#navbar .nav-link').forEach(link => {
-        link.classList.remove('active');
+      let iframesPorCargar = pageLinks.length;
+      let iframesCargados = 0;
+
+      pageLinks.forEach(link => {
+        const pageName = link.getAttribute('data-page');
+        const iframe = document.getElementById(`iframe-${pageName}`);
+        
+        if (iframe) {
+          iframe.onload = () => {
+            iframesCargados++;
+            if (iframesCargados === iframesPorCargar) {
+              loadingOverlay.style.display = "none"; // Oculta todo el overlay al terminar
+            }
+          };
+          const cacheBuster = `&v=${Date.now()}`;
+          iframe.src = `${BASE_URL}?page=${pageName}${cacheBuster}`;
+        } else {
+           iframesPorCargar--;
+        }
       });
-      if (elementoClicado) {
-        elementoClicado.classList.add('active');
+    }
+    
+    function sincronizarAplicacion() {
+      const confirmado = confirm("¿Estás seguro de que quieres sincronizar?\nEsto recargará todos los módulos para obtener los datos más recientes y puede tardar un momento.");
+      if (confirmado) {
+        cargarTodosLosIframes(true); // Llama a la función indicando que es una sincronización
       }
     }
 
-    // ==================================================================
-    // === NUEVO BLOQUE PARA MANEJAR LA AUTORIZACIÓN REQUERIDA =========
-    // ==================================================================
-    window.addEventListener('message', function(event) {
-      // Por seguridad, es una buena práctica verificar el origen, aunque aquí lo omitimos por simplicidad.
-      // if (event.origin !== "https://script.google.com") return;
-
-      // Comprueba si el mensaje del iframe indica que se requiere autorización.
-      if (event.data && event.data.type === 'authRequired') {
-        loadingOverlay.style.display = "none"; // Ocultar el spinner de carga
-
-        // Abre la URL de autorización de Google en una nueva pestaña del navegador.
-        window.open(event.data.url, '_blank');
-        
-        // Reemplaza el iframe con un mensaje útil para el usuario.
-        document.getElementById('iframe-wrapper').innerHTML = `
-          <div style="padding: 40px; text-align: center; font-family: 'Inter', sans-serif;">
-            <h2 style="color: #333;">Se requiere autorización</h2>
-            <p style="color: #555; line-height: 1.6;">Para continuar, por favor completa el inicio de sesión y autoriza la aplicación en la <b>nueva pestaña</b> que se ha abierto.</p>
-            <p style="color: #555; line-height: 1.6;">Una vez que hayas terminado, haz clic en el botón de abajo para recargar.</p>
-            <br>
-            <a href="#" onclick="location.reload()" style="background-color: var(--primary-color); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: 500;">
-              Recargar la aplicación
-            </a>
-          </div>
-        `;
-      }
-    });
-    // ==================================================================
-    // === FIN DEL NUEVO BLOQUE =========================================
-    // ==================================================================
-
-    iframe.onload = function() {
-      // Esto ocultará el spinner después de que el iframe cargue correctamente
-      // o después de que se muestre el mensaje de error de autorización.
-      loadingOverlay.style.display = "none";
-    };
-
     window.onload = () => {
-      // Carga el módulo inicial cuando la página se abre por primera vez.
-      cargarModulo("index", document.querySelector('#navbar .nav-link.active'));
+        cargarTodosLosIframes(false); // Llama a la función indicando que es la carga inicial
+        paginaActivaAnterior = 'index';
+        tiempoEntradaPagina = Date.now();
     };
   </script>
 

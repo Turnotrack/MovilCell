@@ -158,7 +158,7 @@
 
   <script>
     const BASE_URL = "https://script.google.com/macros/s/AKfycbym5SxYBxRIpXbDe3PMbLtx3CriBJKcPH8XFjVGvpOCciIGFIT8gl5-BhxsxkqFJOTB/exec";
-    const UMBRAL_RECARGA_MS = 60000;
+    const UPDATE_INTERVAL_MS = 60000; // Intervalo de actualización: 60 segundos (1 minuto)
     
     // Referencias a los elementos del DOM
     const loadingOverlay = document.getElementById("loading-overlay");
@@ -167,40 +167,63 @@
     const syncText = document.getElementById("sync-text");
     const pageLinks = document.querySelectorAll('.nav-main-link[data-page]');
 
-    let paginaActivaAnterior = null;
-    let tiempoEntradaPagina = null;
+    // --- NUEVAS VARIABLES GLOBALES PARA LA LÓGICA DE ACTUALIZACIÓN ---
+    let paginaActivaActual = 'index'; // Mantiene registro de la página visible actualmente.
+    // Un 'Set' para guardar los nombres de las páginas que se omitieron en un ciclo de
+    // actualización porque estaban activas. Es más eficiente que un array para esta tarea.
+    const paginasPendientesDeActualizacion = new Set();
 
-    function cambiarVista(nombrePagina, elementoClicado) {
-      const ahora = Date.now();
-      if (paginaActivaAnterior && (ahora - tiempoEntradaPagina > UMBRAL_RECARGA_MS) && paginaActivaAnterior !== nombrePagina && paginaActivaAnterior !== 'index') {
-        const iframeARecargar = document.getElementById(`iframe-${paginaActivaAnterior}`);
-        if (iframeARecargar) {
-          console.log(`Recargando en segundo plano '${paginaActivaAnterior}' porque se abandonó después de ${UMBRAL_RECARGA_MS / 1000}s.`);
-          iframeARecargar.src = `${BASE_URL}?page=${paginaActivaAnterior}&v=${Date.now()}`;
-        }
+
+    /**
+     * Función auxiliar para recargar un iframe específico.
+     * Evita repetir código.
+     * @param {string} pageName - El nombre de la página (y del iframe) a recargar.
+     */
+    function recargarIframe(pageName) {
+      const iframe = document.getElementById(`iframe-${pageName}`);
+      if (iframe) {
+        console.log(`[Auto-Update] Recargando '${pageName}' en segundo plano...`);
+        // Añadimos un cache-buster para forzar la recarga desde el servidor
+        iframe.src = `${BASE_URL}?page=${pageName}&v=${Date.now()}`;
       }
+    }
 
+    /**
+     * Cambia la vista activa y maneja la lógica de actualización "catch-up".
+     */
+    function cambiarVista(nombrePagina, elementoClicado) {
+      // --- LÓGICA DE ACTUALIZACIÓN "CATCH-UP" ---
+      // Antes de cambiar de vista, comprobamos si la página que estamos ABANDONANDO
+      // ('paginaActivaActual') estaba marcada como pendiente.
+      if (paginasPendientesDeActualizacion.has(paginaActivaActual)) {
+        console.log(`Saliendo de '${paginaActivaActual}', que estaba pendiente. Actualizando ahora.`);
+        recargarIframe(paginaActivaActual);
+        // Una vez que se ordena la recarga, la eliminamos del conjunto de pendientes.
+        paginasPendientesDeActualizacion.delete(paginaActivaActual);
+      }
+      
+      // Lógica original para cambiar la visibilidad de los iframes y los botones
       document.querySelectorAll('.iframe-wrapper').forEach(wrapper => wrapper.classList.remove('active'));
       document.getElementById(`wrapper-${nombrePagina}`).classList.add('active');
       
       pageLinks.forEach(link => link.classList.remove('active'));
       if (elementoClicado) elementoClicado.classList.add('active');
 
-      paginaActivaAnterior = nombrePagina;
-      tiempoEntradaPagina = Date.now();
+      // Actualizamos la variable global para que apunte a la nueva página activa.
+      paginaActivaActual = nombrePagina;
     }
     
+    /**
+     * Carga todos los iframes. Se usa en la carga inicial y en la sincronización manual.
+     */
     function cargarTodosLosIframes(esSincronizacion = false) {
-      // --- LÓGICA DE VISUALIZACIÓN DE CARGA MODIFICADA ---
       loadingOverlay.style.display = "flex";
       
       if (esSincronizacion) {
-        // Si es una sincronización manual, muestra el spinner simple
         initialLoadAnimation.style.display = "none";
         syncLoadMessage.style.display = "flex";
         syncText.textContent = "Sincronizando y actualizando datos...";
       } else {
-        // Si es la carga inicial, muestra la nueva animación con el logo
         initialLoadAnimation.style.display = "flex";
         syncLoadMessage.style.display = "none";
       }
@@ -216,28 +239,66 @@
           iframe.onload = () => {
             iframesCargados++;
             if (iframesCargados === iframesPorCargar) {
-              loadingOverlay.style.display = "none"; // Oculta todo el overlay al terminar
+              loadingOverlay.style.display = "none";
             }
           };
-          const cacheBuster = `&v=${Date.now()}`;
-          iframe.src = `${BASE_URL}?page=${pageName}${cacheBuster}`;
+          recargarIframe(pageName); // Usamos nuestra función auxiliar
         } else {
            iframesPorCargar--;
         }
       });
     }
     
+    /**
+     * La sincronización manual fuerza la recarga de TODO, sin excepciones.
+     */
     function sincronizarAplicacion() {
       const confirmado = confirm("¿Estás seguro de que quieres sincronizar?\nEsto recargará todos los módulos para obtener los datos más recientes y puede tardar un momento.");
       if (confirmado) {
-        cargarTodosLosIframes(true); // Llama a la función indicando que es una sincronización
+        cargarTodosLosIframes(true);
+        // Limpiamos cualquier pendiente, ya que todo se está actualizando ahora mismo.
+        paginasPendientesDeActualizacion.clear();
       }
     }
 
+    /**
+     * Inicia el ciclo de actualización automática en segundo plano.
+     */
+    function iniciarCicloDeActualizacion() {
+      console.log(`Ciclo de actualización automática iniciado. Intervalo: ${UPDATE_INTERVAL_MS / 1000}s`);
+      
+      setInterval(() => {
+        console.log("--- Disparando ciclo de actualización automática ---");
+        
+        pageLinks.forEach(link => {
+            const pageName = link.getAttribute('data-page');
+
+            // REGLA 1: Nunca actualizar 'index' automáticamente.
+            if (pageName === 'index') {
+              return; // Salta a la siguiente iteración del bucle.
+            }
+
+            // REGLA 2: Si la página es la que está activa, no la actualices.
+            // En su lugar, márcala como pendiente.
+            if (pageName === paginaActivaActual) {
+              console.log(`Página '${pageName}' está activa. Se omite y se marca como pendiente.`);
+              paginasPendientesDeActualizacion.add(pageName);
+              return; // Salta a la siguiente iteración.
+            }
+
+            // Si pasa las reglas, se actualiza en segundo plano.
+            recargarIframe(pageName);
+        });
+
+      }, UPDATE_INTERVAL_MS);
+    }
+
+    /**
+     * Función principal que se ejecuta al cargar la página.
+     */
     window.onload = () => {
-        cargarTodosLosIframes(false); // Llama a la función indicando que es la carga inicial
-        paginaActivaAnterior = 'index';
-        tiempoEntradaPagina = Date.now();
+        cargarTodosLosIframes(false); // 1. Carga inicial de todas las páginas.
+        iniciarCicloDeActualizacion(); // 2. Inicia el temporizador para las actualizaciones automáticas.
     };
   </script>
 

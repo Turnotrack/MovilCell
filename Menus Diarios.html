@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificador Nutricional Inteligente</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+        :root {
+            --primary-color: #005A9C; 
+            --secondary-color: #00AEC7; 
+            --accent-color: #F37021;
+            --text-color: #333; 
+            --bg-color: #f4f7f6; 
+            --card-bg: #ffffff; 
+            --border-color: #e0e6ed;
+        }
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+        header { 
+            text-align: center; 
+            margin-bottom: 25px; 
+        }
+        header h1 { 
+            color: var(--primary-color); 
+            font-weight: 700; 
+        }
+        header p { 
+            font-size: 1.1em; 
+            color: #555; 
+        }
+        .generator-section, .planner-section { 
+            background: var(--card-bg); 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            padding: 25px; 
+            margin-bottom: 25px; 
+        }
+        h2 { 
+            color: var(--primary-color); 
+            border-bottom: 2px solid var(--secondary-color); 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+        }
+        .controls { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+        .btn { 
+            background-color: var(--secondary-color); 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 25px; 
+            cursor: pointer; 
+            font-size: 1em; 
+            font-weight: bold; 
+            transition: all 0.3s ease; 
+        }
+        .btn:hover { 
+            background-color: var(--accent-color); 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15); 
+        }
+        .btn-print { background-color: #28a745; }
+        .btn-reset { background-color: #dc3545; }
+        .btn-shop { background-color: #17a2b8; }
+        .btn-auto { background-color: #6f42c1; } /* Nuevo color para el botón automático */
+        #options-display { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+            gap: 20px; 
+        }
+        .option-card { 
+            background-color: #f9f9f9; 
+            border: 1px solid var(--border-color); 
+            border-left: 5px solid var(--secondary-color); 
+            border-radius: 8px; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .option-card h4 { 
+            margin: 0 0 10px 0; 
+            color: var(--text-color); 
+        }
+        .option-card ul { 
+            list-style: none; 
+            padding: 0; 
+            margin: 0 0 15px 0; 
+            flex-grow: 1; 
+        }
+        .option-card li { 
+            font-size: 0.9em; 
+            margin-bottom: 5px; 
+        }
+        .option-card .add-btn { 
+            align-self: flex-end; 
+            background-color: var(--accent-color); 
+            color: white; 
+            border: none; 
+            border-radius: 50%; 
+            width: 35px; 
+            height: 35px; 
+            font-size: 1.5em; 
+            font-weight: bold; 
+            cursor: pointer; 
+            line-height: 35px; 
+            text-align: center; 
+        }
+        .weekly-planner { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        .weekly-planner th, .weekly-planner td { 
+            border: 1px solid var(--border-color); 
+            padding: 10px; 
+            text-align: left; 
+            vertical-align: top; 
+        }
+        .weekly-planner th { 
+            background-color: var(--primary-color); 
+            color: white; 
+            text-align: center; 
+        }
+        .weekly-planner td { 
+            min-height: 100px; 
+            cursor: pointer; 
+            transition: background-color 0.2s; 
+        }
+        .weekly-planner td:hover { 
+            background-color: #e9f7ff; 
+        }
+        .weekly-planner td.selected-cell { 
+            background-color: #cce7ff; 
+            outline: 2px solid var(--primary-color); 
+        }
+        .weekly-planner .meal-content ul { 
+            padding-left: 15px; 
+            margin: 0; 
+            font-size: 0.85em; 
+        }
+        .modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.5); 
+        }
+        .modal-content { 
+            background-color: #fefefe; 
+            margin: 5% auto; 
+            padding: 20px; 
+            border: 1px solid #888; 
+            width: 80%; 
+            max-width: 600px; 
+            border-radius: 10px; 
+        }
+        .close-btn { 
+            color: #aaa; 
+            float: right; 
+            font-size: 28px; 
+            font-weight: bold; 
+            cursor: pointer; 
+        }
+        #shopping-list-content { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+        }
+        #shopping-list-content h4 { 
+            color: var(--primary-color); 
+        }
+        #shopping-list-content ul { 
+            list-style-type: '✓ '; 
+            padding-left: 20px;
+        }
+        @media print {
+            body { 
+                padding: 0; 
+                font-size: 10pt; 
+            } 
+            .container { 
+                max-width: 100%; 
+                box-shadow: none; 
+            }
+            .generator-section, header p, .planner-controls, .modal { 
+                display: none; 
+            }
+            .planner-section { 
+                box-shadow: none; 
+                padding: 0; 
+            }
+            .print-shopping-list { 
+                display: block !important; 
+            }
+            .weekly-planner th, .weekly-planner td { 
+                border: 1px solid #ccc; 
+                padding: 5px; 
+            }
+            .weekly-planner th { 
+                background-color: #eee !important; 
+                color: #000 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Planificador Nutricional Inteligente</h1>
+            <p>Genera menús con combinaciones óptimas para cada momento del día y crea tu lista de compras semanal.</p>
+        </header>
+
+        <section class="generator-section">
+            <h2>Paso 1: Generar Opciones de Menú (Modo Manual)</h2>
+            <div class="controls">
+                <button class="btn" onclick="generateOptions('desayuno')">🍳 Generar Desayunos</button>
+                <button class="btn" onclick="generateOptions('almuerzo')">🍲 Generar Almuerzos</button>
+                <button class="btn" onclick="generateOptions('algo')">🍎 Generar Algo</button>
+                <button class="btn" onclick="generateOptions('cena')">🥗 Generar Cenas</button>
+            </div>
+            <div id="options-display"></div>
+        </section>
+
+        <section class="planner-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;" class="planner-controls">
+                <h2>Paso 2: Construye tu Semana</h2>
+                <div>
+                    <button class="btn btn-auto" onclick="generateFullWeek()">🤖 Planificación Rápida</button>
+                    <button class="btn btn-shop" onclick="showShoppingList()">🛒 Generar Lista de Compras</button>
+                    <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir Plan</button>
+                    <button class="btn btn-reset" onclick="resetPlan()">🔄 Reiniciar</button>
+                </div>
+            </div>
+            <table class="weekly-planner">
+                <!-- La estructura de la tabla se genera dinámicamente con JavaScript -->
+            </table>
+        </section>
+    </div>
+
+    <div id="shoppingListModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Lista de Compras Semanal</h2>
+            <div id="shopping-list-content"></div>
+            <br>
+            <button class="btn btn-print" onclick="printShoppingList()">Imprimir Lista</button>
+        </div>
+    </div>
+
+    <script>
+        const foodDB = {
+            leches: [
+                { id: "l1", name: "Leche semidescremada (90ml)", ingredients: ["Leche semidescremada"] },
+                { id: "l2", name: "Yogurt dietético (90ml)", ingredients: ["Yogurt dietético"] },
+                { id: "l3", name: "Kumis dietético (90ml)", ingredients: ["Kumis dietético"] },
+            ],
+            proteinas: [
+                { id: "p1", name: "Huevos revueltos c/ tomate y cebolla", ingredients: ["Huevo", "Tomate", "Cebolla", "Aceite de Oliva"] },
+                { id: "p2", name: "Queso bajo en grasa a la plancha c/ orégano", ingredients: ["Queso bajo en grasa", "Orégano", "Aceite de Oliva"] },
+                { id: "p3", name: "Huevos cocidos en rodajas", ingredients: ["Huevo"] },
+                { id: "p4", name: "Sándwich de jamón de pavo", ingredients: ["Jamón de pavo"] } // Pan se añade como harina
+            ],
+            carnes: [
+                { id: "c1", name: "Pechuga de pollo a la plancha", ingredients: ["Pollo", "Aceite de Oliva", "Ajo", "Limón"] },
+                { id: "c2", name: "Pescado blanco al horno con finas hierbas", ingredients: ["Pescado blanco", "Finas hierbas", "Aceite de Oliva", "Limón"] },
+                { id: "c3", name: "Carne de res magra en bistec encebollado", ingredients: ["Carne de res magra", "Cebolla", "Aceite de Oliva"] },
+                { id: "c4", name: "Atún en agua con vegetales", ingredients: ["Atún en lata", "Cebolla", "Pimentón", "Apio"] },
+                { id: "c5", name: "Lentejas guisadas con verduras", ingredients: ["Lentejas", "Zanahoria", "Cebolla", "Ajo"] }
+            ],
+            harinas: [
+                { id: "h1", name: "Arroz cocido", ingredients: ["Arroz"] },
+                { id: "h2", name: "Arepa delgada integral", ingredients: ["Arepa integral"] },
+                { id: "h3", name: "Pan integral", ingredients: ["Pan integral"] },
+                { id: "h4", name: "Papa al vapor con perejil", ingredients: ["Papa", "Perejil"] },
+                { id: "h5", name: "Galletas integrales", ingredients: ["Galletas integrales"] },
+                { id: "h6", name: "Pasta integral en salsa de tomate natural", ingredients: ["Pasta integral", "Tomate", "Albahaca"] },
+                { id: "h7", name: "Plátano maduro asado", ingredients: ["Plátano maduro"] },
+                { id: "h8", name: "Quinoa cocida", ingredients: ["Quinoa"] }
+            ],
+            verduras: [
+                { id: "v1", name: "Ensalada fresca (lechuga, tomate, pepino)", ingredients: ["Lechuga", "Tomate", "Pepino"] },
+                { id: "v2", name: "Verduras al vapor (brócoli, coliflor, zanahoria)", ingredients: ["Brócoli", "Coliflor", "Zanahoria"] },
+                { id: "v3", name: "Champiñones salteados con espinaca", ingredients: ["Champiñones", "Espinaca", "Ajo"] },
+                { id: "v4", name: "Pimentones y zucchini asados", ingredients: ["Pimentón", "Zucchini"] },
+            ],
+            frutas: [
+                { id: "f1", name: "Manzana en rodajas", ingredients: ["Manzana"] },
+                { id: "f2", name: "Tazón de fresas", ingredients: ["Fresa"] },
+                { id: "f3", name: "Papaya en trozos", ingredients: ["Papaya"] },
+                { id: "f4", name: "Naranja en gajos", ingredients: ["Naranja"] },
+                { id: "f5", name: "Uvas", ingredients: ["Uva"] },
+                { id: "f6", name: "Medio banano", ingredients: ["Banano"] },
+            ],
+            grasas: [
+                { id: "g1", name: "Aguacate en cubos", ingredients: ["Aguacate"] },
+                { id: "g2", name: "Aderezo de aceite de oliva y limón", ingredients: ["Aceite de Oliva", "Limón"] },
+                { id: "g3", name: "Puñado de nueces", ingredients: ["Nueces"] },
+                { id: "g4", name: "Puñado de almendras", ingredients: ["Almendras"] },
+            ]
+        };
+
+        const ingredientCategoryMap = {
+            'Leche semidescremada': 'Lácteos y Huevos', 'Yogurt dietético': 'Lácteos y Huevos', 'Kumis dietético': 'Lácteos y Huevos', 'Huevo': 'Lácteos y Huevos', 'Queso bajo en grasa': 'Lácteos y Huevos',
+            'Pollo': 'Proteínas', 'Pescado blanco': 'Proteínas', 'Carne de res magra': 'Proteínas', 'Atún en lata': 'Proteínas', 'Jamón de pavo': 'Proteínas',
+            'Tomate': 'Frutas y Verduras', 'Cebolla': 'Frutas y Verduras', 'Ajo': 'Frutas y Verduras', 'Limón': 'Frutas y Verduras', 'Finas hierbas': 'Frutas y Verduras', 'Pimentón': 'Frutas y Verduras', 'Apio': 'Frutas y Verduras', 'Zanahoria': 'Frutas y Verduras', 'Perejil': 'Frutas y Verduras', 'Albahaca': 'Frutas y Verduras', 'Lechuga': 'Frutas y Verduras', 'Pepino': 'Frutas y Verduras', 'Brócoli': 'Frutas y Verduras', 'Coliflor': 'Frutas y Verduras', 'Champiñones': 'Frutas y Verduras', 'Espinaca': 'Frutas y Verduras', 'Zucchini': 'Frutas y Verduras',
+            'Manzana': 'Frutas y Verduras', 'Fresa': 'Frutas y Verduras', 'Papaya': 'Frutas y Verduras', 'Naranja': 'Frutas y Verduras', 'Uva': 'Frutas y Verduras', 'Banano': 'Frutas y Verduras', 'Aguacate': 'Frutas y Verduras',
+            'Lentejas': 'Despensa', 'Arroz': 'Despensa', 'Arepa integral': 'Despensa', 'Pan integral': 'Despensa', 'Papa': 'Despensa', 'Galletas integrales': 'Despensa', 'Pasta integral': 'Despensa', 'Plátano maduro': 'Despensa', 'Quinoa': 'Despensa', 'Aceite de Oliva': 'Despensa', 'Orégano': 'Despensa', 'Nueces': 'Despensa', 'Almendras': 'Despensa'
+        };
+
+        let currentTargetCell = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const plannerTable = document.querySelector('.weekly-planner');
+            let tableHTML = `
+                <thead>
+                    <tr>
+                        <th>Comida</th>
+                        <th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th><th>Sábado</th><th>Domingo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${['Desayuno', 'Almuerzo', 'Algo', 'Cena'].map(meal => `
+                    <tr>
+                        <td><strong>${meal}</strong></td>
+                        ${['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map(day => `
+                        <td id="cell-${day.toLowerCase()}-${meal.toLowerCase()}" onclick="selectCell(this)"></td>
+                        `).join('')}
+                    </tr>
+                    `).join('')}
+                </tbody>`;
+            plannerTable.innerHTML = tableHTML;
+        });
+
+        function getRandomItem(group, filterIds = []) {
+            let items = foodDB[group];
+            if (filterIds.length > 0) {
+                items = items.filter(item => filterIds.includes(item.id));
+            }
+            return items[Math.floor(Math.random() * items.length)];
+        }
+        
+        // Helper function to create a single meal, returns an object with html and ingredients
+        function createSingleMeal(mealType) {
+            let mealComponents = {};
+            let ingredients = [];
+
+            switch (mealType) {
+                case 'desayuno':
+                    mealComponents.leche = getRandomItem('leches');
+                    mealComponents.proteina = getRandomItem('proteinas');
+                    mealComponents.harina = getRandomItem('harinas', ['h2', 'h3', 'h8']); // Arepa, Pan, Quinoa
+                    break;
+                case 'almuerzo':
+                    mealComponents.carne = getRandomItem('carnes');
+                    mealComponents.harina1 = getRandomItem('harinas');
+                    do { mealComponents.harina2 = getRandomItem('harinas'); } while (mealComponents.harina1.id === mealComponents.harina2.id);
+                    mealComponents.verdura = getRandomItem('verduras');
+                    mealComponents.grasa = getRandomItem('grasas');
+                    break;
+                case 'algo':
+                    mealComponents.leche = getRandomItem('leches');
+                    mealComponents.fruta = getRandomItem('frutas');
+                    break;
+                case 'cena':
+                    mealComponents.carne = getRandomItem('carnes', ['c1','c2','c4']); // Proteinas ligeras: Pollo, Pescado, Atún
+                    mealComponents.harina = getRandomItem('harinas', ['h2','h5','h8']); // Harinas ligeras: Arepa, Galletas, Quinoa
+                    mealComponents.verdura = getRandomItem('verduras');
+                    mealComponents.grasa = getRandomItem('grasas', ['g1', 'g2']); // Grasas ligeras: Aguacate, Aceite de oliva
+                    break;
+            }
+
+            let htmlContent = `<ul>`;
+            for (const key in mealComponents) {
+                htmlContent += `<li>${mealComponents[key].name}</li>`;
+                ingredients.push(...mealComponents[key].ingredients);
+            }
+            htmlContent += `</ul>`;
+
+            return { html: htmlContent, ingredients: ingredients.join(',') };
+        }
+
+        // Generates 3 options for manual selection
+        function generateOptions(mealType) {
+            const display = document.getElementById('options-display');
+            display.innerHTML = '';
+            const mealTitle = mealType.charAt(0).toUpperCase() + mealType.slice(1);
+
+            for (let i = 0; i < 3; i++) {
+                const mealData = createSingleMeal(mealType);
+                const card = document.createElement('div');
+                card.className = 'option-card';
+                card.innerHTML = `
+                    <div class="meal-content" data-ingredients="${mealData.ingredients}">
+                        <h4>${mealTitle} Opción ${i + 1}</h4>
+                        ${mealData.html}
+                    </div>
+                    <button class="add-btn" onclick="addToPlanner(this)">+</button>`;
+                display.appendChild(card);
+            }
+        }
+
+        // NEW FUNCTION to automatically generate the full week's menu
+        function generateFullWeek() {
+            if (!confirm("¿Deseas rellenar toda la semana automáticamente? Se borrarán las comidas que ya hayas añadido.")) {
+                return;
+            }
+
+            const days = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+            const meals = ['desayuno', 'almuerzo', 'algo', 'cena'];
+
+            for (const day of days) {
+                for (const meal of meals) {
+                    const cellId = `cell-${day}-${meal}`;
+                    const cell = document.getElementById(cellId);
+                    const mealData = createSingleMeal(meal);
+                    cell.innerHTML = `<div class="meal-content" data-ingredients="${mealData.ingredients}">${mealData.html}</div>`;
+                }
+            }
+        }
+
+        function selectCell(cell) {
+            document.querySelectorAll('.selected-cell').forEach(c => c.classList.remove('selected-cell'));
+            cell.classList.add('selected-cell');
+            currentTargetCell = cell.id;
+        }
+
+        function addToPlanner(button) {
+            if (!currentTargetCell) {
+                alert("Por favor, selecciona primero una casilla en el planificador semanal.");
+                return;
+            }
+            const targetCell = document.getElementById(currentTargetCell);
+            const mealContentDiv = button.parentElement.querySelector('.meal-content');
+            targetCell.innerHTML = mealContentDiv.outerHTML;
+            targetCell.classList.remove('selected-cell');
+            currentTargetCell = null;
+        }
+
+        function resetPlan() {
+            if (confirm("¿Estás seguro de que quieres borrar todo el plan semanal?")) {
+                document.querySelectorAll('.weekly-planner td[id]').forEach(cell => cell.innerHTML = '');
+            }
+        }
+
+        function showShoppingList() {
+            const allCells = document.querySelectorAll('.weekly-planner td .meal-content');
+            let allIngredients = [];
+            allCells.forEach(cell => {
+                const ingredients = cell.dataset.ingredients.split(',');
+                if (ingredients[0] !== "") { 
+                    allIngredients.push(...ingredients);
+                }
+            });
+
+            if (allIngredients.length === 0) {
+                alert("Tu plan semanal está vacío. Añade algunas comidas primero.");
+                return;
+            }
+
+            const uniqueIngredients = [...new Set(allIngredients)];
+            const categorizedList = {};
+            
+            Object.values(ingredientCategoryMap).forEach(category => {
+                if (!categorizedList[category]) {
+                    categorizedList[category] = [];
+                }
+            });
+
+            uniqueIngredients.forEach(ing => {
+                const category = ingredientCategoryMap[ing] || 'Otros';
+                if (!categorizedList[category]) categorizedList[category] = [];
+                categorizedList[category].push(ing);
+            });
+
+            const listContent = document.getElementById('shopping-list-content');
+            listContent.innerHTML = '';
+            
+            const categoryOrder = ['Frutas y Verduras', 'Proteínas', 'Lácteos y Huevos', 'Despensa', 'Otros'];
+            
+            categoryOrder.forEach(category => {
+                if (categorizedList[category] && categorizedList[category].length > 0) {
+                    let categoryHtml = `<div><h4>${category}</h4><ul>`;
+                    categorizedList[category].sort().forEach(item => {
+                        categoryHtml += `<li>${item}</li>`;
+                    });
+                    categoryHtml += `</ul></div>`;
+                    listContent.innerHTML += categoryHtml;
+                }
+            });
+
+            document.getElementById('shoppingListModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('shoppingListModal').style.display = 'none';
+        }
+
+        function printShoppingList() {
+            const modalContent = document.getElementById('shoppingListModal').innerHTML;
+            const originalPage = document.body.innerHTML;
+
+            document.body.innerHTML = `<html><head><title>Lista de Compras</title><style>
+                body { font-family: sans-serif; } #shopping-list-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } h2 { text-align: center; } h4 { border-bottom: 1px solid #ccc; padding-bottom: 5px;} ul { list-style-type: '☐ '; padding-left: 20px;}
+            </style></head><body>${modalContent}</body></html>`;
+            
+            const closeBtn = document.querySelector('.close-btn');
+            const printBtn = document.querySelector('.btn-print');
+            if(closeBtn) closeBtn.style.display = 'none';
+            if(printBtn) printBtn.style.display = 'none';
+
+            window.print();
+            
+            window.location.reload(); 
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('shoppingListModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>

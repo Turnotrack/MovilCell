@@ -95,116 +95,31 @@
             display: flex; 
             flex-direction: column; 
         }
-        .option-card h4 { 
-            margin: 0 0 10px 0; 
-            color: var(--text-color); 
-        }
-        .option-card ul { 
-            list-style: none; 
-            padding: 0; 
-            margin: 0 0 15px 0; 
-            flex-grow: 1; 
-        }
-        .option-card li { 
-            font-size: 0.95em; 
-            margin-bottom: 8px; 
-        }
-        .option-card .add-btn { 
-            align-self: flex-end; 
-            background-color: var(--accent-color); 
-            color: white; 
-            border: none; 
-            border-radius: 50%; 
-            width: 35px; 
-            height: 35px; 
-            font-size: 1.5em; 
-            font-weight: bold; 
-            cursor: pointer; 
-            line-height: 35px; 
-            text-align: center; 
-        }
-        .weekly-planner { 
-            width: 100%; 
-            border-collapse: collapse; 
-        }
-        .weekly-planner th { 
-            background-color: var(--primary-color); 
-            color: white; 
-            text-align: center; 
-            padding: 10px;
-        }
-        .weekly-planner td { 
-            border: 1px solid var(--border-color); 
-            padding: 10px; 
-            text-align: left; 
-            vertical-align: top;
-            min-height: 100px; 
-            cursor: pointer; 
-            transition: background-color 0.2s; 
-        }
-        .weekly-planner td:hover { 
-            background-color: #e9f7ff; 
-        }
-        .weekly-planner td.selected-cell { 
-            background-color: #cce7ff; 
-            outline: 2px solid var(--primary-color); 
-        }
-        .weekly-planner .meal-content ul { 
-            padding-left: 15px; 
-            margin: 0; 
-            font-size: 0.9em; 
-        }
-        .weekly-planner .meal-content li {
-            margin-bottom: 5px;
-        }
-        .modal { 
-            display: none; 
-            position: fixed; 
-            z-index: 1000; 
-            left: 0; 
-            top: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.5); 
-        }
-        .modal-content { 
-            background-color: #fefefe; 
-            margin: 5% auto; 
-            padding: 20px; 
-            border: 1px solid #888; 
-            width: 90%; 
-            max-width: 600px; 
-            border-radius: 10px; 
-        }
-        .close-btn { 
-            color: #aaa; 
-            float: right; 
-            font-size: 28px; 
-            font-weight: bold; 
-            cursor: pointer; 
-        }
-        #shopping-list-content { 
-            display: grid; 
-            grid-template-columns: 1fr; /* Default to 1 column */
-            gap: 20px; 
-        }
-        #shopping-list-content h4 { 
-            color: var(--primary-color); 
-        }
-        #shopping-list-content ul { 
-            list-style-type: '✓ '; 
-            padding-left: 20px;
-        }
+        .option-card h4 { margin: 0 0 10px 0; color: var(--text-color); }
+        .option-card ul { list-style: none; padding: 0; margin: 0 0 15px 0; flex-grow: 1; }
+        .option-card li { font-size: 0.95em; margin-bottom: 8px; }
+        .option-card .add-btn { align-self: flex-end; background-color: var(--accent-color); color: white; border: none; border-radius: 50%; width: 35px; height: 35px; font-size: 1.5em; font-weight: bold; cursor: pointer; line-height: 35px; text-align: center; }
+        .weekly-planner { width: 100%; border-collapse: collapse; }
+        .weekly-planner th { background-color: var(--primary-color); color: white; text-align: center; padding: 10px; }
+        .weekly-planner td { border: 1px solid var(--border-color); padding: 10px; text-align: left; vertical-align: top; min-height: 100px; cursor: pointer; transition: background-color 0.2s; }
+        .weekly-planner td:hover { background-color: #e9f7ff; }
+        .weekly-planner td.selected-cell { background-color: #cce7ff; outline: 2px solid var(--primary-color); }
+        .weekly-planner .meal-content ul { padding-left: 15px; margin: 0; font-size: 0.9em; }
+        .weekly-planner .meal-content li { margin-bottom: 5px; }
+        .recommendations { margin-top: 25px; padding-top: 15px; border-top: 2px solid var(--border-color); }
+        .recommendations h3 { color: var(--primary-color); }
+        .recommendations ul { list-style-type: '⭐'; padding-left: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .recommendations li { margin-bottom: 8px; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 600px; border-radius: 10px; }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        #shopping-list-content { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        #shopping-list-content h4 { color: var(--primary-color); }
+        #shopping-list-content ul { list-style-type: '✓ '; padding-left: 20px;}
         
-        /* Media Queries for Responsive Design */
         @media (min-width: 600px) {
-            .controls {
-                flex-wrap: nowrap;
-            }
-            #shopping-list-content {
-                grid-template-columns: 1fr 1fr; /* 2 columns on larger screens */
-            }
+            .controls { flex-wrap: nowrap; }
+            #shopping-list-content { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -213,76 +128,28 @@
             header p { font-size: 0.9em; }
             .planner-controls { flex-direction: column; }
             .planner-controls > div { display: flex; flex-wrap: wrap; width: 100%; margin-top: 10px; }
-
-            .weekly-planner thead {
-                display: none;
-            }
-            .weekly-planner, .weekly-planner tbody, .weekly-planner tr, .weekly-planner td {
-                display: block;
-                width: 100%;
-            }
-            .weekly-planner tr {
-                margin-bottom: 15px;
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                overflow: hidden;
-            }
-            .weekly-planner td {
-                border: none;
-                border-bottom: 1px solid var(--border-color);
-                position: relative;
-                padding-left: 100px; /* Space for the label */
-                min-height: 60px;
-            }
-            .weekly-planner td:last-child {
-                border-bottom: none;
-            }
-            .weekly-planner td::before {
-                position: absolute;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                width: 90px; /* Width of the label */
-                background-color: #f8f9fa;
-                border-right: 1px solid var(--border-color);
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 5px;
-                content: attr(data-label);
-            }
+            .weekly-planner thead { display: none; }
+            .weekly-planner, .weekly-planner tbody, .weekly-planner tr, .weekly-planner td { display: block; width: 100%; }
+            .weekly-planner tr { margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+            .weekly-planner td { border: none; border-bottom: 1px solid var(--border-color); position: relative; padding-left: 100px; min-height: 60px; }
+            .weekly-planner td:last-child { border-bottom: none; }
+            .weekly-planner td::before { position: absolute; left: 0; top: 0; bottom: 0; width: 90px; background-color: #f8f9fa; border-right: 1px solid var(--border-color); font-weight: bold; display: flex; align-items: center; justify-content: center; padding: 5px; content: attr(data-label); }
+            .recommendations ul { grid-template-columns: 1fr; }
         }
         
         @media print {
-            body { 
-                padding: 0; 
-                font-size: 10pt; 
-            } 
-            .container { 
-                max-width: 100%; 
-                box-shadow: none; 
-            }
-            .generator-section, header p, .planner-controls, .modal { 
-                display: none; 
-            }
-            .planner-section { 
-                box-shadow: none; 
-                padding: 0; 
-            }
-            .weekly-planner th, .weekly-planner td { 
-                border: 1px solid #ccc; 
-                padding: 5px; 
-            }
-            .weekly-planner th { 
-                background-color: #eee !important; 
-                color: #000 !important; 
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact; 
-            }
-            .weekly-planner .meal-content ul {
-                font-size: 0.8em;
-            }
+            body { padding: 0; font-size: 9pt; } 
+            .container { max-width: 100%; box-shadow: none; }
+            .generator-section, header, .planner-controls, .modal { display: none; }
+            .planner-section { box-shadow: none; padding: 0; }
+            .weekly-planner { table-layout: fixed; }
+            .weekly-planner th, .weekly-planner td { border: 1px solid #ccc; padding: 4px; }
+            .weekly-planner th { background-color: #eee !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; font-size: 8pt; }
+            .weekly-planner .meal-content ul { font-size: 7.5pt; padding-left: 10px; margin: 0; }
+            .weekly-planner .meal-content li { margin-bottom: 2px; }
+            .recommendations { margin-top: 10px; page-break-inside: avoid; }
+            .recommendations h3 { text-align: center; font-size: 10pt; }
+            .recommendations ul { font-size: 8pt; list-style-type: '- '; }
         }
     </style>
 </head>
@@ -317,6 +184,21 @@
             <table class="weekly-planner">
                 <!-- Table generated by JS -->
             </table>
+            <div class="recommendations">
+                <h3>⭐ Recordatorios y Recomendaciones Generales</h3>
+                <ul>
+                    <li><strong>No omitas comidas:</strong> Realiza las 5 comidas del día en los horarios establecidos.</li>
+                    <li><strong>Hidratación:</strong> Consume entre 6 y 8 vasos de agua al día. Evita jugos y bebidas azucaradas.</li>
+                    <li><strong>Métodos de cocción:</strong> Prefiere cocinar al horno, a la plancha, al vapor o sudado. Evita los fritos.</li>
+                    <li><strong>Come despacio:</strong> Mastica bien y disfruta cada bocado para mejorar la digestión y la saciedad.</li>
+                    <li><strong>Grasas saludables:</strong> Utiliza aceites como el de oliva o canola y consume aguacate y frutos secos con moderación.</li>
+                    <li><strong>Evita ultraprocesados:</strong> Limita el consumo de embutidos grasos, paquetes, salsas cremosas y dulces.</li>
+                    <li><strong>Lácteos:</strong> Prefiere opciones bajas en grasa y sin azúcar añadida.</li>
+                    <li><strong>Endulzantes:</strong> Si es necesario, utiliza stevia o sucralosa.</li>
+                    <li><strong>Condimentos naturales:</strong> Usa hierbas, especias, limón, ajo y vinagre para dar sabor a tus comidas.</li>
+                    <li><strong>Actividad Física:</strong> Realiza un mínimo de 150 minutos de ejercicio a la semana.</li>
+                </ul>
+            </div>
         </section>
     </div>
 
@@ -380,9 +262,9 @@
             days.forEach(day => tableHTML += `<th>${day}</th>`);
             tableHTML += `</tr></thead><tbody>`;
             meals.forEach(meal => {
-                tableHTML += `<tr><td><strong>${meal}</strong></td>`;
+                tableHTML += `<tr><td data-label="Comida"><strong>${meal}</strong></td>`;
                 days.forEach(day => {
-                    tableHTML += `<td id="cell-${day.toLowerCase()}-${meal.toLowerCase()}" data-label="${meal}" onclick="selectCell(this)"></td>`;
+                    tableHTML += `<td id="cell-${day.toLowerCase()}-${meal.toLowerCase()}" data-label="${day}" onclick="selectCell(this)"></td>`;
                 });
                 tableHTML += `</tr>`;
             });
@@ -408,7 +290,7 @@
                     htmlContent += `<li><b>Proteína (2):</b> ${proteinaDes.name} (${proteinaDes.portion})</li>`;
                     htmlContent += `<li><b>Harina (1):</b> ${harinaDes.name} (${harinaDes.portion})</li>`;
                     htmlContent += `<li><b>Verdura (0.5):</b> Añadir al gusto</li>`;
-                    ingredients.push(...lecheDes.ingredients, ...proteinaDes.ingredients, ...harinaDes.ingredients, ...getRandomItem('verduras').ingredients);
+                    ingredients.push(...lecheDes.ingredients, ...proteinaDes.ingredients, ...harinaDes.ingredients, { name: 'Mix de Verduras (tomate, lechuga, etc)', quantity: 0.5, unit: 'porción' });
                     break;
                 case 'almuerzo':
                     const carneAlm = getRandomItem('carnes');
@@ -420,7 +302,7 @@
                     htmlContent += `<li><b>Harinas (2):</b> ${harinaAlm1.name} + ${harinaAlm2.name}</li>`;
                     htmlContent += `<li><b>Verduras (1.5):</b> ${getRandomItem('verduras').name} (1.5 pocillos)</li>`;
                     htmlContent += `<li><b>Grasa (1):</b> ${grasaAlm.name} (${grasaAlm.portion})</li>`;
-                    ingredients.push(...carneAlm.ingredients, ...harinaAlm1.ingredients, ...harinaAlm2.ingredients, ...getRandomItem('verduras').ingredients, ...grasaAlm.ingredients);
+                    ingredients.push(...carneAlm.ingredients, ...harinaAlm1.ingredients, ...harinaAlm2.ingredients, { name: 'Mix de Verduras (tomate, lechuga, etc)', quantity: 1.5, unit: 'porción' }, ...grasaAlm.ingredients);
                     break;
                 case 'algo':
                     const lecheAlgo = getRandomItem('leches');
@@ -437,7 +319,7 @@
                     htmlContent += `<li><b>Harina (1):</b> ${harinaCena.name} (${harinaCena.portion})</li>`;
                     htmlContent += `<li><b>Verduras (1):</b> ${getRandomItem('verduras').name} (1 pocillo)</li>`;
                     htmlContent += `<li><b>Grasa (1):</b> ${grasaCena.name} (${grasaCena.portion})</li>`;
-                    ingredients.push(...carneCena.ingredients, ...harinaCena.ingredients, ...getRandomItem('verduras').ingredients, ...grasaCena.ingredients);
+                    ingredients.push(...carneCena.ingredients, ...harinaCena.ingredients, { name: 'Mix de Verduras (tomate, lechuga, etc)', quantity: 1, unit: 'porción' }, ...grasaCena.ingredients);
                     break;
             }
             htmlContent += `</ul>`;
@@ -498,8 +380,10 @@
             const allCells = document.querySelectorAll('.weekly-planner td .meal-content');
             let allIngredients = [];
             allCells.forEach(cell => {
-                const ingredients = JSON.parse(cell.dataset.ingredients);
-                allIngredients.push(...ingredients);
+                if (cell.dataset.ingredients) {
+                    const ingredients = JSON.parse(cell.dataset.ingredients);
+                    allIngredients.push(...ingredients);
+                }
             });
 
             if (allIngredients.length === 0) {

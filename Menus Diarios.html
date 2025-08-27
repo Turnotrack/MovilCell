@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador Nutricional Inteligente (con Porciones)</title>
+    <title>Planificador Nutricional Pro</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
         :root {
@@ -20,7 +20,7 @@
             background-color: var(--bg-color); 
             color: var(--text-color); 
             margin: 0; 
-            padding: 20px; 
+            padding: 10px; 
         }
         .container { 
             max-width: 1200px; 
@@ -33,16 +33,19 @@
         header h1 { 
             color: var(--primary-color); 
             font-weight: 700; 
+            font-size: 2em;
         }
         header p { 
             font-size: 1.1em; 
             color: #555; 
+            max-width: 600px;
+            margin: 0 auto;
         }
         .generator-section, .planner-section { 
             background: var(--card-bg); 
             border-radius: 12px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
-            padding: 25px; 
+            padding: 20px; 
             margin-bottom: 25px; 
         }
         h2 { 
@@ -67,6 +70,7 @@
             font-size: 1em; 
             font-weight: bold; 
             transition: all 0.3s ease; 
+            flex-grow: 1;
         }
         .btn:hover { 
             background-color: var(--accent-color); 
@@ -123,18 +127,17 @@
             width: 100%; 
             border-collapse: collapse; 
         }
-        .weekly-planner th, .weekly-planner td { 
-            border: 1px solid var(--border-color); 
-            padding: 10px; 
-            text-align: left; 
-            vertical-align: top; 
-        }
         .weekly-planner th { 
             background-color: var(--primary-color); 
             color: white; 
             text-align: center; 
+            padding: 10px;
         }
         .weekly-planner td { 
+            border: 1px solid var(--border-color); 
+            padding: 10px; 
+            text-align: left; 
+            vertical-align: top;
             min-height: 100px; 
             cursor: pointer; 
             transition: background-color 0.2s; 
@@ -170,7 +173,7 @@
             margin: 5% auto; 
             padding: 20px; 
             border: 1px solid #888; 
-            width: 80%; 
+            width: 90%; 
             max-width: 600px; 
             border-radius: 10px; 
         }
@@ -183,7 +186,7 @@
         }
         #shopping-list-content { 
             display: grid; 
-            grid-template-columns: 1fr 1fr; 
+            grid-template-columns: 1fr; /* Default to 1 column */
             gap: 20px; 
         }
         #shopping-list-content h4 { 
@@ -193,6 +196,64 @@
             list-style-type: '✓ '; 
             padding-left: 20px;
         }
+        
+        /* Media Queries for Responsive Design */
+        @media (min-width: 600px) {
+            .controls {
+                flex-wrap: nowrap;
+            }
+            #shopping-list-content {
+                grid-template-columns: 1fr 1fr; /* 2 columns on larger screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 5px; }
+            header h1 { font-size: 1.5em; }
+            header p { font-size: 0.9em; }
+            .planner-controls { flex-direction: column; }
+            .planner-controls > div { display: flex; flex-wrap: wrap; width: 100%; margin-top: 10px; }
+
+            .weekly-planner thead {
+                display: none;
+            }
+            .weekly-planner, .weekly-planner tbody, .weekly-planner tr, .weekly-planner td {
+                display: block;
+                width: 100%;
+            }
+            .weekly-planner tr {
+                margin-bottom: 15px;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            .weekly-planner td {
+                border: none;
+                border-bottom: 1px solid var(--border-color);
+                position: relative;
+                padding-left: 100px; /* Space for the label */
+                min-height: 60px;
+            }
+            .weekly-planner td:last-child {
+                border-bottom: none;
+            }
+            .weekly-planner td::before {
+                position: absolute;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: 90px; /* Width of the label */
+                background-color: #f8f9fa;
+                border-right: 1px solid var(--border-color);
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 5px;
+                content: attr(data-label);
+            }
+        }
+        
         @media print {
             body { 
                 padding: 0; 
@@ -208,9 +269,6 @@
             .planner-section { 
                 box-shadow: none; 
                 padding: 0; 
-            }
-            .print-shopping-list { 
-                display: block !important; 
             }
             .weekly-planner th, .weekly-planner td { 
                 border: 1px solid #ccc; 
@@ -231,33 +289,33 @@
 <body>
     <div class="container">
         <header>
-            <h1>Planificador Nutricional Inteligente</h1>
-            <p>Genera menús con combinaciones óptimas y porciones exactas según tu plan, y crea tu lista de compras semanal.</p>
+            <h1>Planificador Nutricional Pro</h1>
+            <p>Genera menús con porciones exactas, crea tu lista de compras con cantidades y planifica tu semana de forma manual o automática.</p>
         </header>
 
         <section class="generator-section">
-            <h2>Paso 1: Generar Opciones de Menú (Modo Manual)</h2>
+            <h2>Paso 1: Generar Opciones (Modo Manual)</h2>
             <div class="controls">
-                <button class="btn" onclick="generateOptions('desayuno')">🍳 Generar Desayunos</button>
-                <button class="btn" onclick="generateOptions('almuerzo')">🍲 Generar Almuerzos</button>
-                <button class="btn" onclick="generateOptions('algo')">🍎 Generar Algo</button>
-                <button class="btn" onclick="generateOptions('cena')">🥗 Generar Cenas</button>
+                <button class="btn" onclick="generateOptions('desayuno')">🍳 Desayunos</button>
+                <button class="btn" onclick="generateOptions('almuerzo')">🍲 Almuerzos</button>
+                <button class="btn" onclick="generateOptions('algo')">🍎 Algo</button>
+                <button class="btn" onclick="generateOptions('cena')">🥗 Cenas</button>
             </div>
             <div id="options-display"></div>
         </section>
 
         <section class="planner-section">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;" class="planner-controls">
+            <div class="planner-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2>Paso 2: Construye tu Semana</h2>
                 <div>
                     <button class="btn btn-auto" onclick="generateFullWeek()">🤖 Planificación Rápida</button>
-                    <button class="btn btn-shop" onclick="showShoppingList()">🛒 Generar Lista de Compras</button>
+                    <button class="btn btn-shop" onclick="showShoppingList()">🛒 Lista de Compras</button>
                     <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir Plan</button>
                     <button class="btn btn-reset" onclick="resetPlan()">🔄 Reiniciar</button>
                 </div>
             </div>
             <table class="weekly-planner">
-                <!-- La estructura de la tabla se genera dinámicamente con JavaScript -->
+                <!-- Table generated by JS -->
             </table>
         </section>
     </div>
@@ -274,98 +332,70 @@
 
     <script>
         const foodDB = {
-            leches: [
-                { id: "l1", name: "Leche semidescremada", portion: "90ml", ingredients: ["Leche semidescremada"] },
-                { id: "l2", name: "Yogurt dietético", portion: "90ml", ingredients: ["Yogurt dietético"] },
-                { id: "l3", name: "Kumis dietético", portion: "90ml", ingredients: ["Kumis dietético"] },
-            ],
+            leches: [ { id: "l1", name: "Leche semidescremada", portion: "90ml", ingredients: [{ name: "Leche semidescremada", quantity: 90, unit: "ml" }] } ],
             proteinas: [
-                { id: "p1", name: "Huevos revueltos c/ verduras", portion: "2 unidades", ingredients: ["Huevo", "Tomate", "Cebolla", "Aceite de Oliva"] },
-                { id: "p2", name: "Queso bajo en grasa a la plancha", portion: "2 tajadas delgadas", ingredients: ["Queso bajo en grasa", "Orégano", "Aceite de Oliva"] },
-                { id: "p3", name: "Huevos cocidos en rodajas", portion: "2 unidades", ingredients: ["Huevo"] },
-                { id: "p4", name: "Jamón de pavo", portion: "4 tajadas delgadas", ingredients: ["Jamón de pavo"] }
+                { id: "p1", name: "Huevos revueltos", portion: "2 unidades", ingredients: [{ name: "Huevo", quantity: 2, unit: "unidades" }, { name: "Aceite de Oliva", quantity: 0.25, unit: "cda postre" }] },
+                { id: "p2", name: "Queso bajo en grasa", portion: "2 tajadas", ingredients: [{ name: "Queso bajo en grasa", quantity: 2, unit: "tajadas" }] },
+                { id: "p4", name: "Jamón de pavo", portion: "4 tajadas", ingredients: [{ name: "Jamón de pavo", quantity: 4, unit: "tajadas" }] }
             ],
             carnes: [
-                { id: "c1", name: "Pechuga de pollo a la plancha", portion: "150-200g", ingredients: ["Pollo", "Aceite de Oliva", "Ajo", "Limón"] },
-                { id: "c2", name: "Pescado blanco al horno", portion: "150-200g", ingredients: ["Pescado blanco", "Finas hierbas", "Aceite de Oliva", "Limón"] },
-                { id: "c3", name: "Carne de res magra en bistec", portion: "150-200g", ingredients: ["Carne de res magra", "Cebolla", "Aceite de Oliva"] },
-                { id: "c4", name: "Atún en agua", portion: "1 lata (184g)", ingredients: ["Atún en lata", "Cebolla", "Pimentón", "Apio"] },
-                { id: "c5", name: "Lentejas guisadas", portion: "aprox. 1 pocillo", ingredients: ["Lentejas", "Zanahoria", "Cebolla", "Ajo"] }
+                { id: "c1", name: "Pechuga de pollo", portion: "150-200g", ingredients: [{ name: "Pollo", quantity: 175, unit: "g" }, { name: "Aceite de Oliva", quantity: 0.25, unit: "cda postre" }] },
+                { id: "c2", name: "Pescado blanco", portion: "150-200g", ingredients: [{ name: "Pescado blanco", quantity: 175, unit: "g" }, { name: "Aceite de Oliva", quantity: 0.25, unit: "cda postre" }] },
+                { id: "c4", name: "Atún en agua", portion: "1 lata", ingredients: [{ name: "Atún en lata", quantity: 1, unit: "lata" }] }
             ],
             harinas: [
-                { id: "h1", name: "Arroz cocido", portion: "6 cdas soperas", ingredients: ["Arroz"] },
-                { id: "h2", name: "Arepa delgada integral", portion: "1 mediana", ingredients: ["Arepa integral"] },
-                { id: "h3", name: "Pan integral", portion: "1 tajada", ingredients: ["Pan integral"] },
-                { id: "h4", name: "Papa al vapor", portion: "1 mediana", ingredients: ["Papa", "Perejil"] },
-                { id: "h5", name: "Galletas integrales", portion: "3 unidades", ingredients: ["Galletas integrales"] },
-                { id: "h6", name: "Pasta integral en salsa natural", portion: "1/2 pocillo", ingredients: ["Pasta integral", "Tomate", "Albahaca"] },
-                { id: "h7", name: "Plátano maduro asado", portion: "1/2 pequeño", ingredients: ["Plátano maduro"] },
-                { id: "h8", name: "Quinoa cocida", portion: "7 cdas soperas", ingredients: ["Quinoa"] }
+                { id: "h1", name: "Arroz cocido", portion: "6 cdas", ingredients: [{ name: "Arroz", quantity: 0.5, unit: "pocillo crudo" }] },
+                { id: "h2", name: "Arepa integral", portion: "1 mediana", ingredients: [{ name: "Arepa integral", quantity: 1, unit: "unidad" }] },
+                { id: "h3", name: "Pan integral", portion: "1 tajada", ingredients: [{ name: "Pan integral", quantity: 1, unit: "tajada" }] },
+                { id: "h4", name: "Papa", portion: "1 mediana", ingredients: [{ name: "Papa", quantity: 1, unit: "unidad mediana" }] },
+                { id: "h5", name: "Galletas integrales", portion: "3 unidades", ingredients: [{ name: "Galletas integrales", quantity: 3, unit: "unidades" }] },
+                { id: "h8", name: "Quinoa cocida", portion: "7 cdas", ingredients: [{ name: "Quinoa", quantity: 0.5, unit: "pocillo crudo" }] }
             ],
-            verduras: [
-                { id: "v1", name: "Ensalada fresca (lechuga, tomate, pepino)", ingredients: ["Lechuga", "Tomate", "Pepino"] },
-                { id: "v2", name: "Verduras al vapor (brócoli, coliflor)", ingredients: ["Brócoli", "Coliflor", "Zanahoria"] },
-                { id: "v3", name: "Champiñones salteados con espinaca", ingredients: ["Champiñones", "Espinaca", "Ajo"] },
-                { id: "v4", name: "Pimentones y zucchini asados", ingredients: ["Pimentón", "Zucchini"] },
-            ],
+            verduras: [ { id: "v1", name: "Verduras variadas", ingredients: [{ name: "Mix de Verduras (tomate, lechuga, etc)", quantity: 1, unit: "porción" }] }],
             frutas: [
-                { id: "f1", name: "Manzana", portion: "1 mediana", ingredients: ["Manzana"] },
-                { id: "f2", name: "Tazón de fresas", portion: "12 unidades", ingredients: ["Fresa"] },
-                { id: "f3", name: "Papaya en trozos", portion: "1 pocillo", ingredients: ["Papaya"] },
-                { id: "f4", name: "Naranja", portion: "1 mediana", ingredients: ["Naranja"] },
-                { id: "f5", name: "Uvas", portion: "12 unidades", ingredients: ["Uva"] },
-                { id: "f6", name: "Banano", portion: "1/2 pequeño", ingredients: ["Banano"] },
+                { id: "f1", name: "Manzana", portion: "1 mediana", ingredients: [{ name: "Manzana", quantity: 1, unit: "unidad" }] },
+                { id: "f2", name: "Fresas", portion: "12 unidades", ingredients: [{ name: "Fresa", quantity: 12, unit: "unidades" }] }
             ],
             grasas: [
-                { id: "g1", name: "Aguacate", portion: "1/4 pequeño", ingredients: ["Aguacate"] },
-                { id: "g2", name: "Aceite de oliva", portion: "1 cda de postre", ingredients: ["Aceite de Oliva", "Limón"] },
-                { id: "g3", name: "Nueces", portion: "1 cda sopera", ingredients: ["Nueces"] },
-                { id: "g4", name: "Almendras", portion: "1 cda sopera", ingredients: ["Almendras"] },
+                { id: "g1", name: "Aguacate", portion: "1/4 peq.", ingredients: [{ name: "Aguacate", quantity: 0.25, unit: "unidad" }] },
+                { id: "g2", name: "Aceite de oliva", portion: "1 cdta", ingredients: [{ name: "Aceite de Oliva", quantity: 1, unit: "cda postre" }] }
             ]
         };
 
         const ingredientCategoryMap = {
-            'Leche semidescremada': 'Lácteos y Huevos', 'Yogurt dietético': 'Lácteos y Huevos', 'Kumis dietético': 'Lácteos y Huevos', 'Huevo': 'Lácteos y Huevos', 'Queso bajo en grasa': 'Lácteos y Huevos',
-            'Pollo': 'Proteínas', 'Pescado blanco': 'Proteínas', 'Carne de res magra': 'Proteínas', 'Atún en lata': 'Proteínas', 'Jamón de pavo': 'Proteínas',
-            'Tomate': 'Frutas y Verduras', 'Cebolla': 'Frutas y Verduras', 'Ajo': 'Frutas y Verduras', 'Limón': 'Frutas y Verduras', 'Finas hierbas': 'Frutas y Verduras', 'Pimentón': 'Frutas y Verduras', 'Apio': 'Frutas y Verduras', 'Zanahoria': 'Frutas y Verduras', 'Perejil': 'Frutas y Verduras', 'Albahaca': 'Frutas y Verduras', 'Lechuga': 'Frutas y Verduras', 'Pepino': 'Frutas y Verduras', 'Brócoli': 'Frutas y Verduras', 'Coliflor': 'Frutas y Verduras', 'Champiñones': 'Frutas y Verduras', 'Espinaca': 'Frutas y Verduras', 'Zucchini': 'Frutas y Verduras',
-            'Manzana': 'Frutas y Verduras', 'Fresa': 'Frutas y Verduras', 'Papaya': 'Frutas y Verduras', 'Naranja': 'Frutas y Verduras', 'Uva': 'Frutas y Verduras', 'Banano': 'Frutas y Verduras', 'Aguacate': 'Frutas y Verduras',
-            'Lentejas': 'Despensa', 'Arroz': 'Despensa', 'Arepa integral': 'Despensa', 'Pan integral': 'Despensa', 'Papa': 'Despensa', 'Galletas integrales': 'Despensa', 'Pasta integral': 'Despensa', 'Plátano maduro': 'Despensa', 'Quinoa': 'Despensa', 'Aceite de Oliva': 'Despensa', 'Orégano': 'Despensa', 'Nueces': 'Despensa', 'Almendras': 'Despensa'
+            'Leche semidescremada': 'Lácteos y Huevos', 'Huevo': 'Lácteos y Huevos', 'Queso bajo en grasa': 'Lácteos y Huevos',
+            'Pollo': 'Proteínas', 'Pescado blanco': 'Proteínas', 'Atún en lata': 'Proteínas', 'Jamón de pavo': 'Proteínas',
+            'Mix de Verduras (tomate, lechuga, etc)': 'Frutas y Verduras',
+            'Manzana': 'Frutas y Verduras', 'Fresa': 'Frutas y Verduras', 'Aguacate': 'Frutas y Verduras',
+            'Arroz': 'Despensa', 'Arepa integral': 'Despensa', 'Pan integral': 'Despensa', 'Papa': 'Despensa', 'Galletas integrales': 'Despensa', 'Quinoa': 'Despensa', 'Aceite de Oliva': 'Despensa'
         };
 
         let currentTargetCell = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             const plannerTable = document.querySelector('.weekly-planner');
-            let tableHTML = `
-                <thead>
-                    <tr>
-                        <th>Comida</th>
-                        <th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th><th>Sábado</th><th>Domingo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${['Desayuno', 'Almuerzo', 'Algo', 'Cena'].map(meal => `
-                    <tr>
-                        <td><strong>${meal}</strong></td>
-                        ${['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map(day => `
-                        <td id="cell-${day.toLowerCase()}-${meal.toLowerCase()}" onclick="selectCell(this)"></td>
-                        `).join('')}
-                    </tr>
-                    `).join('')}
-                </tbody>`;
+            const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+            const meals = ['Desayuno', 'Almuerzo', 'Algo', 'Cena'];
+            let tableHTML = `<thead><tr><th>Comida</th>`;
+            days.forEach(day => tableHTML += `<th>${day}</th>`);
+            tableHTML += `</tr></thead><tbody>`;
+            meals.forEach(meal => {
+                tableHTML += `<tr><td><strong>${meal}</strong></td>`;
+                days.forEach(day => {
+                    tableHTML += `<td id="cell-${day.toLowerCase()}-${meal.toLowerCase()}" data-label="${meal}" onclick="selectCell(this)"></td>`;
+                });
+                tableHTML += `</tr>`;
+            });
+            tableHTML += `</tbody>`;
             plannerTable.innerHTML = tableHTML;
         });
 
-        function getRandomItem(group, filterIds = []) {
-            let items = foodDB[group];
-            if (filterIds.length > 0) {
-                items = items.filter(item => filterIds.includes(item.id));
-            }
+        function getRandomItem(group) {
+            const items = foodDB[group];
             return items[Math.floor(Math.random() * items.length)];
         }
         
         function createSingleMeal(mealType) {
-            let components = {};
             let ingredients = [];
             let htmlContent = `<ul>`;
 
@@ -374,83 +404,68 @@
                     const lecheDes = getRandomItem('leches');
                     const proteinaDes = getRandomItem('proteinas');
                     const harinaDes = getRandomItem('harinas');
-                    htmlContent += `<li><b>Lácteo (0.5 porción):</b> ${lecheDes.name} (${lecheDes.portion})</li>`;
-                    htmlContent += `<li><b>Proteína (2 porciones):</b> ${proteinaDes.name} (${proteinaDes.portion})</li>`;
-                    htmlContent += `<li><b>Harina (1 porción):</b> ${harinaDes.name} (${harinaDes.portion})</li>`;
-                    htmlContent += `<li><b>Verdura (0.5 porción):</b> Añadir al gusto a la proteína</li>`;
-                    ingredients.push(...lecheDes.ingredients, ...proteinaDes.ingredients, ...harinaDes.ingredients);
+                    htmlContent += `<li><b>Lácteo (0.5):</b> ${lecheDes.name} (${lecheDes.portion})</li>`;
+                    htmlContent += `<li><b>Proteína (2):</b> ${proteinaDes.name} (${proteinaDes.portion})</li>`;
+                    htmlContent += `<li><b>Harina (1):</b> ${harinaDes.name} (${harinaDes.portion})</li>`;
+                    htmlContent += `<li><b>Verdura (0.5):</b> Añadir al gusto</li>`;
+                    ingredients.push(...lecheDes.ingredients, ...proteinaDes.ingredients, ...harinaDes.ingredients, ...getRandomItem('verduras').ingredients);
                     break;
-
                 case 'almuerzo':
                     const carneAlm = getRandomItem('carnes');
                     const harinaAlm1 = getRandomItem('harinas');
                     let harinaAlm2;
                     do { harinaAlm2 = getRandomItem('harinas'); } while (harinaAlm1.id === harinaAlm2.id);
-                    const verduraAlm = getRandomItem('verduras');
                     const grasaAlm = getRandomItem('grasas');
-                    htmlContent += `<li><b>Carne (1.5 porciones):</b> ${carneAlm.name} (${carneAlm.portion})</li>`;
-                    htmlContent += `<li><b>Harinas (2 porciones):</b> ${harinaAlm1.name} (${harinaAlm1.portion}) + ${harinaAlm2.name} (${harinaAlm2.portion})</li>`;
-                    htmlContent += `<li><b>Verduras (1.5 porciones):</b> ${verduraAlm.name} (aprox. 1.5 pocillos)</li>`;
-                    htmlContent += `<li><b>Grasa (1 porción):</b> ${grasaAlm.name} (${grasaAlm.portion})</li>`;
-                    ingredients.push(...carneAlm.ingredients, ...harinaAlm1.ingredients, ...harinaAlm2.ingredients, ...verduraAlm.ingredients, ...grasaAlm.ingredients);
+                    htmlContent += `<li><b>Carne (1.5):</b> ${carneAlm.name} (${carneAlm.portion})</li>`;
+                    htmlContent += `<li><b>Harinas (2):</b> ${harinaAlm1.name} + ${harinaAlm2.name}</li>`;
+                    htmlContent += `<li><b>Verduras (1.5):</b> ${getRandomItem('verduras').name} (1.5 pocillos)</li>`;
+                    htmlContent += `<li><b>Grasa (1):</b> ${grasaAlm.name} (${grasaAlm.portion})</li>`;
+                    ingredients.push(...carneAlm.ingredients, ...harinaAlm1.ingredients, ...harinaAlm2.ingredients, ...getRandomItem('verduras').ingredients, ...grasaAlm.ingredients);
                     break;
-
                 case 'algo':
                     const lecheAlgo = getRandomItem('leches');
                     const frutaAlgo = getRandomItem('frutas');
-                    htmlContent += `<li><b>Lácteo (0.5 porción):</b> ${lecheAlgo.name} (${lecheAlgo.portion})</li>`;
-                    htmlContent += `<li><b>Fruta (1 porción):</b> ${frutaAlgo.name} (${frutaAlgo.portion})</li>`;
+                    htmlContent += `<li><b>Lácteo (0.5):</b> ${lecheAlgo.name} (${lecheAlgo.portion})</li>`;
+                    htmlContent += `<li><b>Fruta (1):</b> ${frutaAlgo.name} (${frutaAlgo.portion})</li>`;
                     ingredients.push(...lecheAlgo.ingredients, ...frutaAlgo.ingredients);
                     break;
-
                 case 'cena':
-                    const carneCena = getRandomItem('carnes', ['c1','c2','c4']);
-                    const harinaCena = getRandomItem('harinas', ['h2','h5','h8']);
-                    const verduraCena = getRandomItem('verduras');
-                    const grasaCena = getRandomItem('grasas', ['g1', 'g2']);
-                    htmlContent += `<li><b>Carne (1.5 porciones):</b> ${carneCena.name} (${carneCena.portion})</li>`;
-                    htmlContent += `<li><b>Harina (1 porción):</b> ${harinaCena.name} (${harinaCena.portion})</li>`;
-                    htmlContent += `<li><b>Verduras (1 porción):</b> ${verduraCena.name} (aprox. 1 pocillo)</li>`;
-                    htmlContent += `<li><b>Grasa (1 porción):</b> ${grasaCena.name} (${grasaCena.portion})</li>`;
-                    ingredients.push(...carneCena.ingredients, ...harinaCena.ingredients, ...verduraCena.ingredients, ...grasaCena.ingredients);
+                    const carneCena = getRandomItem('carnes');
+                    const harinaCena = getRandomItem('harinas');
+                    const grasaCena = getRandomItem('grasas');
+                    htmlContent += `<li><b>Carne (1.5):</b> ${carneCena.name} (${carneCena.portion})</li>`;
+                    htmlContent += `<li><b>Harina (1):</b> ${harinaCena.name} (${harinaCena.portion})</li>`;
+                    htmlContent += `<li><b>Verduras (1):</b> ${getRandomItem('verduras').name} (1 pocillo)</li>`;
+                    htmlContent += `<li><b>Grasa (1):</b> ${grasaCena.name} (${grasaCena.portion})</li>`;
+                    ingredients.push(...carneCena.ingredients, ...harinaCena.ingredients, ...getRandomItem('verduras').ingredients, ...grasaCena.ingredients);
                     break;
             }
-
             htmlContent += `</ul>`;
-            return { html: htmlContent, ingredients: ingredients.join(',') };
+            return { html: htmlContent, ingredients: JSON.stringify(ingredients) };
         }
 
         function generateOptions(mealType) {
             const display = document.getElementById('options-display');
             display.innerHTML = '';
             const mealTitle = mealType.charAt(0).toUpperCase() + mealType.slice(1);
-
             for (let i = 0; i < 3; i++) {
                 const mealData = createSingleMeal(mealType);
                 const card = document.createElement('div');
                 card.className = 'option-card';
-                card.innerHTML = `
-                    <div class="meal-content" data-ingredients="${mealData.ingredients}">
-                        <h4>${mealTitle} Opción ${i + 1}</h4>
-                        ${mealData.html}
-                    </div>
-                    <button class="add-btn" onclick="addToPlanner(this)">+</button>`;
+                card.innerHTML = `<div class="meal-content" data-ingredients='${mealData.ingredients}'><h4>${mealTitle} Opción ${i + 1}</h4>${mealData.html}</div><button class="add-btn" onclick="addToPlanner(this)">+</button>`;
                 display.appendChild(card);
             }
         }
-
+        
         function generateFullWeek() {
-            if (!confirm("¿Deseas rellenar toda la semana automáticamente? Se borrarán las comidas que ya hayas añadido.")) {
-                return;
-            }
+            if (!confirm("¿Deseas rellenar toda la semana automáticamente? Se borrarán las comidas que ya hayas añadido.")) return;
             const days = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
             const meals = ['desayuno', 'almuerzo', 'algo', 'cena'];
             for (const day of days) {
                 for (const meal of meals) {
-                    const cellId = `cell-${day}-${meal}`;
-                    const cell = document.getElementById(cellId);
+                    const cell = document.getElementById(`cell-${day}-${meal}`);
                     const mealData = createSingleMeal(meal);
-                    cell.innerHTML = `<div class="meal-content" data-ingredients="${mealData.ingredients}">${mealData.html}</div>`;
+                    cell.innerHTML = `<div class="meal-content" data-ingredients='${mealData.ingredients}'>${mealData.html}</div>`;
                 }
             }
         }
@@ -483,10 +498,8 @@
             const allCells = document.querySelectorAll('.weekly-planner td .meal-content');
             let allIngredients = [];
             allCells.forEach(cell => {
-                const ingredients = cell.dataset.ingredients.split(',');
-                if (ingredients[0] !== "") { 
-                    allIngredients.push(...ingredients);
-                }
+                const ingredients = JSON.parse(cell.dataset.ingredients);
+                allIngredients.push(...ingredients);
             });
 
             if (allIngredients.length === 0) {
@@ -494,31 +507,30 @@
                 return;
             }
 
-            const uniqueIngredients = [...new Set(allIngredients)];
-            const categorizedList = {};
-            
-            Object.values(ingredientCategoryMap).forEach(category => {
-                if (!categorizedList[category]) {
-                    categorizedList[category] = [];
+            const aggregated = {};
+            allIngredients.forEach(item => {
+                if (!aggregated[item.name]) {
+                    aggregated[item.name] = { total: 0, unit: item.unit };
                 }
+                aggregated[item.name].total += item.quantity;
             });
-
-            uniqueIngredients.forEach(ing => {
-                const category = ingredientCategoryMap[ing] || 'Otros';
+            
+            const categorizedList = {};
+            Object.keys(aggregated).forEach(name => {
+                const category = ingredientCategoryMap[name] || 'Otros';
                 if (!categorizedList[category]) categorizedList[category] = [];
-                categorizedList[category].push(ing);
+                categorizedList[category].push({ name, ...aggregated[name] });
             });
 
             const listContent = document.getElementById('shopping-list-content');
             listContent.innerHTML = '';
-            
             const categoryOrder = ['Frutas y Verduras', 'Proteínas', 'Lácteos y Huevos', 'Despensa', 'Otros'];
             
             categoryOrder.forEach(category => {
                 if (categorizedList[category] && categorizedList[category].length > 0) {
                     let categoryHtml = `<div><h4>${category}</h4><ul>`;
-                    categorizedList[category].sort().forEach(item => {
-                        categoryHtml += `<li>${item}</li>`;
+                    categorizedList[category].sort((a,b) => a.name.localeCompare(b.name)).forEach(item => {
+                        categoryHtml += `<li>${item.name}: <strong>${Math.ceil(item.total * 100) / 100} ${item.unit}</strong></li>`;
                     });
                     categoryHtml += `</ul></div>`;
                     listContent.innerHTML += categoryHtml;
@@ -534,20 +546,18 @@
 
         function printShoppingList() {
             const modalContent = document.getElementById('shoppingListModal').innerHTML;
-            const originalPage = document.body.innerHTML;
-
-            document.body.innerHTML = `<html><head><title>Lista de Compras</title><style>
-                body { font-family: sans-serif; } #shopping-list-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } h2 { text-align: center; } h4 { border-bottom: 1px solid #ccc; padding-bottom: 5px;} ul { list-style-type: '☐ '; padding-left: 20px;}
-            </style></head><body>${modalContent}</body></html>`;
-            
-            const closeBtn = document.querySelector('.close-btn');
-            const printBtn = document.querySelector('.btn-print');
-            if(closeBtn) closeBtn.style.display = 'none';
-            if(printBtn) printBtn.style.display = 'none';
-
-            window.print();
-            
-            window.location.reload(); 
+            const printWindow = window.open('', '', 'height=600,width=800');
+            printWindow.document.write('<html><head><title>Lista de Compras</title>');
+            printWindow.document.write('<style>body { font-family: sans-serif; } #shopping-list-content { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; } h2 { text-align: center; } h4 { border-bottom: 1px solid #ccc; padding-bottom: 5px;} ul { list-style-type: "☐ "; padding-left: 20px;}</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(modalContent);
+            printWindow.document.querySelector('.close-btn').style.display = 'none';
+            printWindow.document.querySelector('.btn-print').style.display = 'none';
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
         }
 
         window.onclick = function(event) {

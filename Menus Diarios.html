@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planificador Nutricional Inteligente</title>
+    <title>Planificador Nutricional Inteligente (con Porciones)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
         :root {
@@ -76,7 +76,7 @@
         .btn-print { background-color: #28a745; }
         .btn-reset { background-color: #dc3545; }
         .btn-shop { background-color: #17a2b8; }
-        .btn-auto { background-color: #6f42c1; } /* Nuevo color para el botón automático */
+        .btn-auto { background-color: #6f42c1; }
         #options-display { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
@@ -102,8 +102,8 @@
             flex-grow: 1; 
         }
         .option-card li { 
-            font-size: 0.9em; 
-            margin-bottom: 5px; 
+            font-size: 0.95em; 
+            margin-bottom: 8px; 
         }
         .option-card .add-btn { 
             align-self: flex-end; 
@@ -149,7 +149,10 @@
         .weekly-planner .meal-content ul { 
             padding-left: 15px; 
             margin: 0; 
-            font-size: 0.85em; 
+            font-size: 0.9em; 
+        }
+        .weekly-planner .meal-content li {
+            margin-bottom: 5px;
         }
         .modal { 
             display: none; 
@@ -219,6 +222,9 @@
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
             }
+            .weekly-planner .meal-content ul {
+                font-size: 0.8em;
+            }
         }
     </style>
 </head>
@@ -226,7 +232,7 @@
     <div class="container">
         <header>
             <h1>Planificador Nutricional Inteligente</h1>
-            <p>Genera menús con combinaciones óptimas para cada momento del día y crea tu lista de compras semanal.</p>
+            <p>Genera menús con combinaciones óptimas y porciones exactas según tu plan, y crea tu lista de compras semanal.</p>
         </header>
 
         <section class="generator-section">
@@ -269,52 +275,52 @@
     <script>
         const foodDB = {
             leches: [
-                { id: "l1", name: "Leche semidescremada (90ml)", ingredients: ["Leche semidescremada"] },
-                { id: "l2", name: "Yogurt dietético (90ml)", ingredients: ["Yogurt dietético"] },
-                { id: "l3", name: "Kumis dietético (90ml)", ingredients: ["Kumis dietético"] },
+                { id: "l1", name: "Leche semidescremada", portion: "90ml", ingredients: ["Leche semidescremada"] },
+                { id: "l2", name: "Yogurt dietético", portion: "90ml", ingredients: ["Yogurt dietético"] },
+                { id: "l3", name: "Kumis dietético", portion: "90ml", ingredients: ["Kumis dietético"] },
             ],
             proteinas: [
-                { id: "p1", name: "Huevos revueltos c/ tomate y cebolla", ingredients: ["Huevo", "Tomate", "Cebolla", "Aceite de Oliva"] },
-                { id: "p2", name: "Queso bajo en grasa a la plancha c/ orégano", ingredients: ["Queso bajo en grasa", "Orégano", "Aceite de Oliva"] },
-                { id: "p3", name: "Huevos cocidos en rodajas", ingredients: ["Huevo"] },
-                { id: "p4", name: "Sándwich de jamón de pavo", ingredients: ["Jamón de pavo"] } // Pan se añade como harina
+                { id: "p1", name: "Huevos revueltos c/ verduras", portion: "2 unidades", ingredients: ["Huevo", "Tomate", "Cebolla", "Aceite de Oliva"] },
+                { id: "p2", name: "Queso bajo en grasa a la plancha", portion: "2 tajadas delgadas", ingredients: ["Queso bajo en grasa", "Orégano", "Aceite de Oliva"] },
+                { id: "p3", name: "Huevos cocidos en rodajas", portion: "2 unidades", ingredients: ["Huevo"] },
+                { id: "p4", name: "Jamón de pavo", portion: "4 tajadas delgadas", ingredients: ["Jamón de pavo"] }
             ],
             carnes: [
-                { id: "c1", name: "Pechuga de pollo a la plancha", ingredients: ["Pollo", "Aceite de Oliva", "Ajo", "Limón"] },
-                { id: "c2", name: "Pescado blanco al horno con finas hierbas", ingredients: ["Pescado blanco", "Finas hierbas", "Aceite de Oliva", "Limón"] },
-                { id: "c3", name: "Carne de res magra en bistec encebollado", ingredients: ["Carne de res magra", "Cebolla", "Aceite de Oliva"] },
-                { id: "c4", name: "Atún en agua con vegetales", ingredients: ["Atún en lata", "Cebolla", "Pimentón", "Apio"] },
-                { id: "c5", name: "Lentejas guisadas con verduras", ingredients: ["Lentejas", "Zanahoria", "Cebolla", "Ajo"] }
+                { id: "c1", name: "Pechuga de pollo a la plancha", portion: "150-200g", ingredients: ["Pollo", "Aceite de Oliva", "Ajo", "Limón"] },
+                { id: "c2", name: "Pescado blanco al horno", portion: "150-200g", ingredients: ["Pescado blanco", "Finas hierbas", "Aceite de Oliva", "Limón"] },
+                { id: "c3", name: "Carne de res magra en bistec", portion: "150-200g", ingredients: ["Carne de res magra", "Cebolla", "Aceite de Oliva"] },
+                { id: "c4", name: "Atún en agua", portion: "1 lata (184g)", ingredients: ["Atún en lata", "Cebolla", "Pimentón", "Apio"] },
+                { id: "c5", name: "Lentejas guisadas", portion: "aprox. 1 pocillo", ingredients: ["Lentejas", "Zanahoria", "Cebolla", "Ajo"] }
             ],
             harinas: [
-                { id: "h1", name: "Arroz cocido", ingredients: ["Arroz"] },
-                { id: "h2", name: "Arepa delgada integral", ingredients: ["Arepa integral"] },
-                { id: "h3", name: "Pan integral", ingredients: ["Pan integral"] },
-                { id: "h4", name: "Papa al vapor con perejil", ingredients: ["Papa", "Perejil"] },
-                { id: "h5", name: "Galletas integrales", ingredients: ["Galletas integrales"] },
-                { id: "h6", name: "Pasta integral en salsa de tomate natural", ingredients: ["Pasta integral", "Tomate", "Albahaca"] },
-                { id: "h7", name: "Plátano maduro asado", ingredients: ["Plátano maduro"] },
-                { id: "h8", name: "Quinoa cocida", ingredients: ["Quinoa"] }
+                { id: "h1", name: "Arroz cocido", portion: "6 cdas soperas", ingredients: ["Arroz"] },
+                { id: "h2", name: "Arepa delgada integral", portion: "1 mediana", ingredients: ["Arepa integral"] },
+                { id: "h3", name: "Pan integral", portion: "1 tajada", ingredients: ["Pan integral"] },
+                { id: "h4", name: "Papa al vapor", portion: "1 mediana", ingredients: ["Papa", "Perejil"] },
+                { id: "h5", name: "Galletas integrales", portion: "3 unidades", ingredients: ["Galletas integrales"] },
+                { id: "h6", name: "Pasta integral en salsa natural", portion: "1/2 pocillo", ingredients: ["Pasta integral", "Tomate", "Albahaca"] },
+                { id: "h7", name: "Plátano maduro asado", portion: "1/2 pequeño", ingredients: ["Plátano maduro"] },
+                { id: "h8", name: "Quinoa cocida", portion: "7 cdas soperas", ingredients: ["Quinoa"] }
             ],
             verduras: [
                 { id: "v1", name: "Ensalada fresca (lechuga, tomate, pepino)", ingredients: ["Lechuga", "Tomate", "Pepino"] },
-                { id: "v2", name: "Verduras al vapor (brócoli, coliflor, zanahoria)", ingredients: ["Brócoli", "Coliflor", "Zanahoria"] },
+                { id: "v2", name: "Verduras al vapor (brócoli, coliflor)", ingredients: ["Brócoli", "Coliflor", "Zanahoria"] },
                 { id: "v3", name: "Champiñones salteados con espinaca", ingredients: ["Champiñones", "Espinaca", "Ajo"] },
                 { id: "v4", name: "Pimentones y zucchini asados", ingredients: ["Pimentón", "Zucchini"] },
             ],
             frutas: [
-                { id: "f1", name: "Manzana en rodajas", ingredients: ["Manzana"] },
-                { id: "f2", name: "Tazón de fresas", ingredients: ["Fresa"] },
-                { id: "f3", name: "Papaya en trozos", ingredients: ["Papaya"] },
-                { id: "f4", name: "Naranja en gajos", ingredients: ["Naranja"] },
-                { id: "f5", name: "Uvas", ingredients: ["Uva"] },
-                { id: "f6", name: "Medio banano", ingredients: ["Banano"] },
+                { id: "f1", name: "Manzana", portion: "1 mediana", ingredients: ["Manzana"] },
+                { id: "f2", name: "Tazón de fresas", portion: "12 unidades", ingredients: ["Fresa"] },
+                { id: "f3", name: "Papaya en trozos", portion: "1 pocillo", ingredients: ["Papaya"] },
+                { id: "f4", name: "Naranja", portion: "1 mediana", ingredients: ["Naranja"] },
+                { id: "f5", name: "Uvas", portion: "12 unidades", ingredients: ["Uva"] },
+                { id: "f6", name: "Banano", portion: "1/2 pequeño", ingredients: ["Banano"] },
             ],
             grasas: [
-                { id: "g1", name: "Aguacate en cubos", ingredients: ["Aguacate"] },
-                { id: "g2", name: "Aderezo de aceite de oliva y limón", ingredients: ["Aceite de Oliva", "Limón"] },
-                { id: "g3", name: "Puñado de nueces", ingredients: ["Nueces"] },
-                { id: "g4", name: "Puñado de almendras", ingredients: ["Almendras"] },
+                { id: "g1", name: "Aguacate", portion: "1/4 pequeño", ingredients: ["Aguacate"] },
+                { id: "g2", name: "Aceite de oliva", portion: "1 cda de postre", ingredients: ["Aceite de Oliva", "Limón"] },
+                { id: "g3", name: "Nueces", portion: "1 cda sopera", ingredients: ["Nueces"] },
+                { id: "g4", name: "Almendras", portion: "1 cda sopera", ingredients: ["Almendras"] },
             ]
         };
 
@@ -358,47 +364,62 @@
             return items[Math.floor(Math.random() * items.length)];
         }
         
-        // Helper function to create a single meal, returns an object with html and ingredients
         function createSingleMeal(mealType) {
-            let mealComponents = {};
+            let components = {};
             let ingredients = [];
+            let htmlContent = `<ul>`;
 
             switch (mealType) {
                 case 'desayuno':
-                    mealComponents.leche = getRandomItem('leches');
-                    mealComponents.proteina = getRandomItem('proteinas');
-                    mealComponents.harina = getRandomItem('harinas', ['h2', 'h3', 'h8']); // Arepa, Pan, Quinoa
+                    const lecheDes = getRandomItem('leches');
+                    const proteinaDes = getRandomItem('proteinas');
+                    const harinaDes = getRandomItem('harinas');
+                    htmlContent += `<li><b>Lácteo (0.5 porción):</b> ${lecheDes.name} (${lecheDes.portion})</li>`;
+                    htmlContent += `<li><b>Proteína (2 porciones):</b> ${proteinaDes.name} (${proteinaDes.portion})</li>`;
+                    htmlContent += `<li><b>Harina (1 porción):</b> ${harinaDes.name} (${harinaDes.portion})</li>`;
+                    htmlContent += `<li><b>Verdura (0.5 porción):</b> Añadir al gusto a la proteína</li>`;
+                    ingredients.push(...lecheDes.ingredients, ...proteinaDes.ingredients, ...harinaDes.ingredients);
                     break;
+
                 case 'almuerzo':
-                    mealComponents.carne = getRandomItem('carnes');
-                    mealComponents.harina1 = getRandomItem('harinas');
-                    do { mealComponents.harina2 = getRandomItem('harinas'); } while (mealComponents.harina1.id === mealComponents.harina2.id);
-                    mealComponents.verdura = getRandomItem('verduras');
-                    mealComponents.grasa = getRandomItem('grasas');
+                    const carneAlm = getRandomItem('carnes');
+                    const harinaAlm1 = getRandomItem('harinas');
+                    let harinaAlm2;
+                    do { harinaAlm2 = getRandomItem('harinas'); } while (harinaAlm1.id === harinaAlm2.id);
+                    const verduraAlm = getRandomItem('verduras');
+                    const grasaAlm = getRandomItem('grasas');
+                    htmlContent += `<li><b>Carne (1.5 porciones):</b> ${carneAlm.name} (${carneAlm.portion})</li>`;
+                    htmlContent += `<li><b>Harinas (2 porciones):</b> ${harinaAlm1.name} (${harinaAlm1.portion}) + ${harinaAlm2.name} (${harinaAlm2.portion})</li>`;
+                    htmlContent += `<li><b>Verduras (1.5 porciones):</b> ${verduraAlm.name} (aprox. 1.5 pocillos)</li>`;
+                    htmlContent += `<li><b>Grasa (1 porción):</b> ${grasaAlm.name} (${grasaAlm.portion})</li>`;
+                    ingredients.push(...carneAlm.ingredients, ...harinaAlm1.ingredients, ...harinaAlm2.ingredients, ...verduraAlm.ingredients, ...grasaAlm.ingredients);
                     break;
+
                 case 'algo':
-                    mealComponents.leche = getRandomItem('leches');
-                    mealComponents.fruta = getRandomItem('frutas');
+                    const lecheAlgo = getRandomItem('leches');
+                    const frutaAlgo = getRandomItem('frutas');
+                    htmlContent += `<li><b>Lácteo (0.5 porción):</b> ${lecheAlgo.name} (${lecheAlgo.portion})</li>`;
+                    htmlContent += `<li><b>Fruta (1 porción):</b> ${frutaAlgo.name} (${frutaAlgo.portion})</li>`;
+                    ingredients.push(...lecheAlgo.ingredients, ...frutaAlgo.ingredients);
                     break;
+
                 case 'cena':
-                    mealComponents.carne = getRandomItem('carnes', ['c1','c2','c4']); // Proteinas ligeras: Pollo, Pescado, Atún
-                    mealComponents.harina = getRandomItem('harinas', ['h2','h5','h8']); // Harinas ligeras: Arepa, Galletas, Quinoa
-                    mealComponents.verdura = getRandomItem('verduras');
-                    mealComponents.grasa = getRandomItem('grasas', ['g1', 'g2']); // Grasas ligeras: Aguacate, Aceite de oliva
+                    const carneCena = getRandomItem('carnes', ['c1','c2','c4']);
+                    const harinaCena = getRandomItem('harinas', ['h2','h5','h8']);
+                    const verduraCena = getRandomItem('verduras');
+                    const grasaCena = getRandomItem('grasas', ['g1', 'g2']);
+                    htmlContent += `<li><b>Carne (1.5 porciones):</b> ${carneCena.name} (${carneCena.portion})</li>`;
+                    htmlContent += `<li><b>Harina (1 porción):</b> ${harinaCena.name} (${harinaCena.portion})</li>`;
+                    htmlContent += `<li><b>Verduras (1 porción):</b> ${verduraCena.name} (aprox. 1 pocillo)</li>`;
+                    htmlContent += `<li><b>Grasa (1 porción):</b> ${grasaCena.name} (${grasaCena.portion})</li>`;
+                    ingredients.push(...carneCena.ingredients, ...harinaCena.ingredients, ...verduraCena.ingredients, ...grasaCena.ingredients);
                     break;
             }
 
-            let htmlContent = `<ul>`;
-            for (const key in mealComponents) {
-                htmlContent += `<li>${mealComponents[key].name}</li>`;
-                ingredients.push(...mealComponents[key].ingredients);
-            }
             htmlContent += `</ul>`;
-
             return { html: htmlContent, ingredients: ingredients.join(',') };
         }
 
-        // Generates 3 options for manual selection
         function generateOptions(mealType) {
             const display = document.getElementById('options-display');
             display.innerHTML = '';
@@ -418,15 +439,12 @@
             }
         }
 
-        // NEW FUNCTION to automatically generate the full week's menu
         function generateFullWeek() {
             if (!confirm("¿Deseas rellenar toda la semana automáticamente? Se borrarán las comidas que ya hayas añadido.")) {
                 return;
             }
-
             const days = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
             const meals = ['desayuno', 'almuerzo', 'algo', 'cena'];
-
             for (const day of days) {
                 for (const meal of meals) {
                     const cellId = `cell-${day}-${meal}`;

@@ -1,11 +1,306 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=https://dinfcs.pythonanywhere.com/">
-  <title>Redireccionando...</title>
+  <base target="_top">
+  <meta charset="UTF-8" />
+  <title>MovilCellApp - Navegación Activa</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --dark-color: #212529;
+      --border-color: #dee2e6;
+      --transition: all 0.2s ease-in-out;
+    }
+    html, body {
+      margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column;
+      overflow: hidden; font-family: 'Inter', Arial, sans-serif; background-color: #f0f2f5;
+    }
+    
+    #navbar {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 20px; padding: 10px 25px; background-color: #ffffff;
+      border-bottom: 1px solid var(--border-color); z-index: 10; position: relative; flex-shrink: 0;
+    }
+    .logo-container { display: flex; align-items: center; gap: 12px; }
+    .logo { height: 35px; }
+    .logo-container .title { font-size: 20px; font-weight: 600; color: var(--dark-color); }
+    .nav-pills { display: flex; list-style: none; margin: 0; padding: 0; align-items: center; gap: 10px; }
+    .nav-item { margin: 0; }
+    
+    .nav-link {
+      transition: var(--transition); font-size: 14px; font-weight: 500;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; white-space: nowrap; cursor: pointer;
+      border-radius: 8px; border: 1px solid transparent;
+      padding: 8px 12px;
+    }
+    .nav-main-link { color: var(--primary-color); background-color: transparent; }
+    .nav-main-link:not(.active):hover { background-color: #e9ecef; }
+    .nav-main-link.active { background-color: var(--dark-color); color: white; }
+    .nav-main-link.active:hover { background-color: #3e4347; }
+    .btn-outline { border-color: #ced4da; color: var(--dark-color); }
+    .btn-outline:hover { background-color: #f8f9fa; }
+
+    #iframe-container { flex-grow: 1; overflow: hidden; border: none; position: relative; }
+    .iframe-wrapper { width: 100%; height: 100%; position: absolute; top: 0; left: 0; visibility: hidden; }
+    .iframe-wrapper.active { visibility: visible; }
+    iframe { width: 100%; height: calc(100% + 65px); border: none; transform: translateY(-65px); }
+    
+    /* --- INICIO: ESTILOS DE LA NUEVA ANIMACIÓN DE CARGA --- */
+    
+    /* Contenedor principal del overlay de carga */
+    #loading-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-color: #ffffff; /* Fondo sólido para ocultar todo */
+      z-index: 9999;
+      display: none; /* Se activa con JS */
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      transition: opacity 0.3s ease-in-out;
+    }
+    
+    /* Contenedor para la animación INICIAL */
+    #initial-load-animation {
+      display: none; /* Se gestiona con JS */
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+    }
+    
+    /* El logo animado */
+    .animated-logo {
+      width: 120px;
+      height: auto;
+      animation: logo-pulse 2s ease-in-out infinite;
+    }
+    
+    /* El texto debajo del logo */
+    .loading-text-fancy {
+      font-size: 18px;
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    /* La animación de pulso para el logo */
+    @keyframes logo-pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+      50% {
+        transform: scale(1.08);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+    }
+    
+    /* Mensaje de carga para "Sincronizar" (más simple) */
+    #sync-load-message {
+      display: none; /* Se gestiona con JS */
+      background-color: white; padding: 20px 30px; border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      align-items: center; gap: 15px; font-size: 16px; font-weight: 500;
+    }
+    /* --- FIN: ESTILOS DE LA NUEVA ANIMACIÓN DE CARGA --- */
+
+  </style>
 </head>
 <body>
-  <p>Si no eres redirigido automáticamente, haz clic <a href="https://dinfcs.pythonanywhere.com/">aquí</a>.</p>
+
+  <div id="navbar">
+    <div class="logo-container">
+      <img src="https://raw.githubusercontent.com/Turnotrack/MovilCell/main/logos/logomc.png" alt="Logo Movil Cell" class="logo">
+      <span class="title">Servicio Técnico</span>
+    </div>
+    
+    <ul class="nav nav-pills">
+      <li class="nav-item"><a class="nav-link nav-main-link active" data-page="index" onclick="cambiarVista('index', this)"><i class="fas fa-home"></i> INICIO</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="gestionReparaciones" onclick="cambiarVista('gestionReparaciones', this)"><i class="fas fa-list-check"></i> REPARACIONES</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="reparacionesDelDia" onclick="cambiarVista('reparacionesDelDia', this)"><i class="fas fa-calendar-day"></i> REPARACIONES DEL DÍA</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="ventasDelDia" onclick="cambiarVista('ventasDelDia', this)"><i class="fas fa-cash-register"></i> VENTAS</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="gestionCreditos" onclick="cambiarVista('gestionCreditos', this)"><i class="fas fa-file-invoice-dollar"></i> CRÉDITOS</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="inventario" onclick="cambiarVista('inventario', this)"><i class="fas fa-boxes"></i> INVENTARIO</a></li>
+      <li class="nav-item"><a class="nav-link nav-main-link" data-page="dashboard" onclick="cambiarVista('dashboard', this)"><i class="fas fa-chart-line"></i> DASHBOARD</a></li>
+      
+      <li class="nav-item" style="margin-left:15px;"><a class="nav-link btn-outline" onclick="sincronizarAplicacion()"><i class="fas fa-sync-alt"></i> Sincronizar</a></li>
+    </ul>
+  </div>
+
+  <div id="iframe-container">
+    <div id="wrapper-index" class="iframe-wrapper active"><iframe id="iframe-index" scrolling="yes"></iframe></div>
+    <div id="wrapper-gestionReparaciones" class="iframe-wrapper"><iframe id="iframe-gestionReparaciones" scrolling="yes"></iframe></div>
+    <div id="wrapper-reparacionesDelDia" class="iframe-wrapper"><iframe id="iframe-reparacionesDelDia" scrolling="yes"></iframe></div>
+    <div id="wrapper-ventasDelDia" class="iframe-wrapper"><iframe id="iframe-ventasDelDia" scrolling="yes"></iframe></div>
+    <div id="wrapper-gestionCreditos" class="iframe-wrapper"><iframe id="iframe-gestionCreditos" scrolling="yes"></iframe></div>
+    <div id="wrapper-inventario" class="iframe-wrapper"><iframe id="iframe-inventario" scrolling="yes"></iframe></div>
+    <div id="wrapper-dashboard" class="iframe-wrapper"><iframe id="iframe-dashboard" scrolling="yes"></iframe></div>
+  </div>
+
+  <!-- ESTRUCTURA HTML DEL OVERLAY ACTUALIZADA -->
+  <div id="loading-overlay">
+    <!-- Animación para la carga inicial -->
+    <div id="initial-load-animation">
+      <img src="https://raw.githubusercontent.com/Turnotrack/MovilCell/main/logos/logomc.png" alt="Cargando MovilCell App" class="animated-logo">
+      <span class="loading-text-fancy">Cargando aplicación...</span>
+    </div>
+    <!-- Mensaje para la sincronización manual -->
+    <div id="sync-load-message">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span id="sync-text">Sincronizando y actualizando datos...</span>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = "https://script.google.com/macros/s/AKfycbym5SxYBxRIpXbDe3PMbLtx3CriBJKcPH8XFjVGvpOCciIGFIT8gl5-BhxsxkqFJOTB/exec";
+    const UPDATE_INTERVAL_MS = 60000; // Intervalo de actualización: 60 segundos (1 minuto)
+    
+    // Referencias a los elementos del DOM
+    const loadingOverlay = document.getElementById("loading-overlay");
+    const initialLoadAnimation = document.getElementById("initial-load-animation");
+    const syncLoadMessage = document.getElementById("sync-load-message");
+    const syncText = document.getElementById("sync-text");
+    const pageLinks = document.querySelectorAll('.nav-main-link[data-page]');
+
+    // --- NUEVAS VARIABLES GLOBALES PARA LA LÓGICA DE ACTUALIZACIÓN ---
+    let paginaActivaActual = 'index'; // Mantiene registro de la página visible actualmente.
+    // Un 'Set' para guardar los nombres de las páginas que se omitieron en un ciclo de
+    // actualización porque estaban activas. Es más eficiente que un array para esta tarea.
+    const paginasPendientesDeActualizacion = new Set();
+
+
+    /**
+     * Función auxiliar para recargar un iframe específico.
+     * Evita repetir código.
+     * @param {string} pageName - El nombre de la página (y del iframe) a recargar.
+     */
+    function recargarIframe(pageName) {
+      const iframe = document.getElementById(`iframe-${pageName}`);
+      if (iframe) {
+        console.log(`[Auto-Update] Recargando '${pageName}' en segundo plano...`);
+        // Añadimos un cache-buster para forzar la recarga desde el servidor
+        iframe.src = `${BASE_URL}?page=${pageName}&v=${Date.now()}`;
+      }
+    }
+
+    /**
+     * Cambia la vista activa y maneja la lógica de actualización "catch-up".
+     */
+    function cambiarVista(nombrePagina, elementoClicado) {
+      // --- LÓGICA DE ACTUALIZACIÓN "CATCH-UP" ---
+      // Antes de cambiar de vista, comprobamos si la página que estamos ABANDONANDO
+      // ('paginaActivaActual') estaba marcada como pendiente.
+      if (paginasPendientesDeActualizacion.has(paginaActivaActual)) {
+        console.log(`Saliendo de '${paginaActivaActual}', que estaba pendiente. Actualizando ahora.`);
+        recargarIframe(paginaActivaActual);
+        // Una vez que se ordena la recarga, la eliminamos del conjunto de pendientes.
+        paginasPendientesDeActualizacion.delete(paginaActivaActual);
+      }
+      
+      // Lógica original para cambiar la visibilidad de los iframes y los botones
+      document.querySelectorAll('.iframe-wrapper').forEach(wrapper => wrapper.classList.remove('active'));
+      document.getElementById(`wrapper-${nombrePagina}`).classList.add('active');
+      
+      pageLinks.forEach(link => link.classList.remove('active'));
+      if (elementoClicado) elementoClicado.classList.add('active');
+
+      // Actualizamos la variable global para que apunte a la nueva página activa.
+      paginaActivaActual = nombrePagina;
+    }
+    
+    /**
+     * Carga todos los iframes. Se usa en la carga inicial y en la sincronización manual.
+     */
+    function cargarTodosLosIframes(esSincronizacion = false) {
+      loadingOverlay.style.display = "flex";
+      
+      if (esSincronizacion) {
+        initialLoadAnimation.style.display = "none";
+        syncLoadMessage.style.display = "flex";
+        syncText.textContent = "Sincronizando y actualizando datos...";
+      } else {
+        initialLoadAnimation.style.display = "flex";
+        syncLoadMessage.style.display = "none";
+      }
+
+      let iframesPorCargar = pageLinks.length;
+      let iframesCargados = 0;
+
+      pageLinks.forEach(link => {
+        const pageName = link.getAttribute('data-page');
+        const iframe = document.getElementById(`iframe-${pageName}`);
+        
+        if (iframe) {
+          iframe.onload = () => {
+            iframesCargados++;
+            if (iframesCargados === iframesPorCargar) {
+              loadingOverlay.style.display = "none";
+            }
+          };
+          recargarIframe(pageName); // Usamos nuestra función auxiliar
+        } else {
+           iframesPorCargar--;
+        }
+      });
+    }
+    
+    /**
+     * La sincronización manual fuerza la recarga de TODO, sin excepciones.
+     */
+    function sincronizarAplicacion() {
+      const confirmado = confirm("¿Estás seguro de que quieres sincronizar?\nEsto recargará todos los módulos para obtener los datos más recientes y puede tardar un momento.");
+      if (confirmado) {
+        cargarTodosLosIframes(true);
+        // Limpiamos cualquier pendiente, ya que todo se está actualizando ahora mismo.
+        paginasPendientesDeActualizacion.clear();
+      }
+    }
+
+    /**
+     * Inicia el ciclo de actualización automática en segundo plano.
+     */
+    function iniciarCicloDeActualizacion() {
+      console.log(`Ciclo de actualización automática iniciado. Intervalo: ${UPDATE_INTERVAL_MS / 1000}s`);
+      
+      setInterval(() => {
+        console.log("--- Disparando ciclo de actualización automática ---");
+        
+        pageLinks.forEach(link => {
+            const pageName = link.getAttribute('data-page');
+
+            // REGLA 1: Nunca actualizar 'index' automáticamente.
+            if (pageName === 'index') {
+              return; // Salta a la siguiente iteración del bucle.
+            }
+
+            // REGLA 2: Si la página es la que está activa, no la actualices.
+            // En su lugar, márcala como pendiente.
+            if (pageName === paginaActivaActual) {
+              console.log(`Página '${pageName}' está activa. Se omite y se marca como pendiente.`);
+              paginasPendientesDeActualizacion.add(pageName);
+              return; // Salta a la siguiente iteración.
+            }
+
+            // Si pasa las reglas, se actualiza en segundo plano.
+            recargarIframe(pageName);
+        });
+
+      }, UPDATE_INTERVAL_MS);
+    }
+
+    /**
+     * Función principal que se ejecuta al cargar la página.
+     */
+    window.onload = () => {
+        cargarTodosLosIframes(false); // 1. Carga inicial de todas las páginas.
+        iniciarCicloDeActualizacion(); // 2. Inicia el temporizador para las actualizaciones automáticas.
+    };
+  </script>
+
 </body>
 </html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TurnoTrack en pantalla completa</title>
+  <style>
+    html, body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background: #000; /* opcional */
+    }
+    /* Iframe a pantalla completa */
+    .fullscreen-iframe {
+      position: fixed;
+      inset: 0;        /* top:0; right:0; bottom:0; left:0 */
+      width: 100vw;
+      height: 100vh;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <iframe
+    class="fullscreen-iframe"
+    src="https://turnotrack.pythonanywhere.com/"
+    allowfullscreen
+    loading="eager"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</body>
+</html>

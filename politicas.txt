@@ -1,0 +1,28 @@
+Politica de Uso Binance Pro Trading AI Assistant
+POLÍTICA DE USO – Binance Pro Trading AI Assistant
+
+Última actualización: 22 de agosto de 2026
+
+1.  Aceptación de los Términos
+    Al instalar y utilizar la extensión Binance Pro Trading AI Assistant, aceptas cumplir con los términos establecidos en este documento. Si no estás de acuerdo con estos términos, debes desinstalar la extensión inmediatamente.
+
+2.  Propósito y Naturaleza del Servicio
+    La extensión está diseñada exclusivamente para proporcionar asistencia analítica visual, indicadores técnicos y automatización de interfaz orientada a la plataforma de trading de Binance.
+
+  - Ausencia de Asesoramiento Financiero: La extensión no ofrece recomendaciones de inversión, asesoramiento financiero, legal o fiscal. Todas las decisiones operativas y de riesgo son responsabilidad exclusiva del usuario.
+  - Simulación y Ejecución: Las funciones de cálculo cuantitativo y simulación operan de manera local y están sujetas a la disponibilidad y cambios en las políticas de las plataformas de intercambio asociadas.
+
+3.  Uso Adecuado y Restricciones
+    Te comprometes a utilizar la extensión de manera legal y ética. Queda estrictamente prohibido:
+
+  - Intentar vulnerar, descompilar, alterar o realizar ingeniería inversa sobre el código fuente de la extensión.
+  - Utilizar la extensión para realizar actividades fraudulentas, manipulación de mercado o prácticas prohibidas por los términos de servicio de Binance.
+  - Distribuir versiones modificadas o no oficiales de la extensión bajo la misma marca.
+
+4.  Limitación de Responsabilidad
+
+  - La herramienta se proporciona "tal cual" y "según disponibilidad", sin garantías de ningún tipo, ya sean expresas o implícitas.
+  - El desarrollador no asume responsabilidad alguna por pérdidas financieras, interrupciones del servicio, fallas en la conectividad a Internet, errores de API de terceros o suspensiones de cuentas de usuario en plataformas externas.
+
+5.  Modificaciones de los Términos
+    Nos reservamos el derecho de modificar esta política de uso en cualquier momento. Las actualizaciones se reflejarán en este mismo documento y el uso continuado de la extensión implicará la aceptación de dichas modificaciones.

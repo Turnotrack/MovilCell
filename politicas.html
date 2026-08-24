@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidad - Binance Pro Trading AI Assistant</title>
+    <style>
+        :root {
+            --primary: #F0B90B;
+            --bg: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --text: #1E2329;
+            --text-muted: #474D57;
+            --border: #EAECEF;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.65;
+            color: var(--text);
+            background-color: var(--bg);
+            margin: 0;
+            padding: 30px 15px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 35px 45px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .header {
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        h1 {
+            color: var(--text);
+            font-size: 26px;
+            margin: 0 0 8px 0;
+        }
+        .badge {
+            background: var(--primary);
+            color: #000;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .date {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        h2 {
+            color: var(--text);
+            font-size: 18px;
+            margin-top: 25px;
+            border-left: 4px solid var(--primary);
+            padding-left: 10px;
+        }
+        p, li {
+            color: var(--text-muted);
+            font-size: 14.5px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .highlight-box {
+            background: #FDF8E2;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        footer {
+            margin-top: 35px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+            font-size: 12.5px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Política de Privacidad</h1>
+        <span class="badge">Binance Pro Trading AI Assistant</span>
+        <div class="date">Última actualización: 24 de agosto de 2026</div>
+    </div>
+
+    <p>Esta Política de Privacidad describe el tratamiento, almacenamiento y protección de datos aplicados por la extensión de Google Chrome <strong>Binance Pro Trading AI Assistant</strong> (en adelante, "la Extensión").</p>
+
+    <div class="highlight-box">
+        <strong>Declaración de Privacidad Principal:</strong> Binance Pro Trading AI Assistant opera de forma 100% local en el navegador del usuario. No recopilamos, no almacenamos en servidores externos, no rastreamos ni vendemos ningún tipo de información personal, datos de navegación ni credenciales financieras.
+    </div>
+
+    <h2>1. Recopilación y Uso de Datos de Usuario</h2>
+    <p>La Extensión está diseñada bajo el principio de privacidad por diseño:</p>
+    <ul>
+        <li><strong>Sin información de identificación personal (PII):</strong> No se recopilan nombres, correos electrónicos, números de teléfono, direcciones IP ni datos biométricos.</li>
+        <li><strong>Almacenamiento 100% Local:</strong> Todas las configuraciones operativas (capital asignado, preferencias de Stop Loss, Take Profit, Trailing Stop y el historial de simulaciones) se guardan única y exclusivamente en el almacenamiento local del dispositivo del usuario mediante la API oficial <code>chrome.storage.local</code>.</li>
+        <li><strong>Sin Servidores de Telemetría:</strong> El desarrollador no opera servidores propios de análisis ni telemetría para monitorear el comportamiento de los usuarios.</li>
+    </ul>
+
+    <h2>2. Justificación de Permisos Declarados</h2>
+    <p>La Extensión solicita únicamente los permisos indispensables para cumplir con su propósito:</p>
+    <ul>
+        <li><strong>storage:</strong> Permite guardar de manera local y persistente en el navegador las preferencias de riesgo, el capital configurado y el registro de operaciones.</li>
+        <li><strong>notifications:</strong> Utilizado para emitir alertas de escritorio locales cuando una posición abierta alcanza sus objetivos técnicos de Take Profit, Stop Loss o activación de Break-Even.</li>
+        <li><strong>alarms:</strong> Permite programar comprobaciones periódicas en segundo plano para evaluar el tiempo de inactividad de las operaciones en curso.</li>
+        <li><strong>host_permissions (api.binance.com, stream.binance.com, api.groq.com):</strong> Permite la comunicación cifrada directa entre el navegador del usuario y los servidores públicos de Binance para la transmisión de precios en tiempo real por WebSockets (<50ms) y con la API de Groq AI para análisis cuantitativo cuando el usuario lo solicita explícitamente.</li>
+    </ul>
+
+    <h2>3. Seguridad de las Claves de API</h2>
+    <p>Si el usuario decide configurar claves de API para operar en modo real en Binance Spot o para el oráculo de IA:</p>
+    <ul>
+        <li>Dichas claves se almacenan localmente en el navegador y nunca se transmiten a ningún servidor que no sean los endpoints oficiales de Binance (<code>api.binance.com</code>) o Groq (<code>api.groq.com</code>).</li>
+        <li>La Extensión solo requiere permisos de lectura y trading spot; nunca solicita ni requiere permisos de retiro de fondos.</li>
+    </ul>
+
+    <h2>4. Ausencia de Código Remoto</h2>
+    <p>En cumplimiento con las Políticas del Programa para Desarrolladores de Chrome Web Store (Manifest V3), todo el código ejecutable de la Extensión se encuentra empaquetado de forma local dentro del archivo de la extensión, sin cargar scripts remotos dinámicos.</p>
+
+    <h2>5. Descargo de Responsabilidad Financiera</h2>
+    <p>La Extensión es una herramienta de asistencia visual, analítica y matemática. No proporciona asesoramiento financiero ni garantiza rendimientos económicos. Todas las decisiones de inversión y la gestión de riesgo son responsabilidad exclusiva del usuario.</p>
+
+    <h2>6. Contacto y Soporte</h2>
+    <p>Si tienes preguntas o inquietudes sobre esta Política de Privacidad, puedes ponerte en contacto a través de la página del repositorio oficial del proyecto en GitHub.</p>
+
+    <footer>
+        &copy; 2026 Binance Pro Trading AI Assistant. Todos los derechos reservados.
+    </footer>
+</div>
+
+</body>
+</html>

@@ -5,103 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TallerTrack - Gestión de Servicios</title>
   <style>
-    /* Estilos generales con toque retro/industrial */
+    /* Estilos generales basados en la estética de TallerTrack */
     html, body {
       height: 100%;
       width: 100%;
       margin: 0;
       padding: 0;
       background: #090d16;
-      font-family: 'Courier New', Courier, monospace, sans-serif;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       overflow: hidden;
     }
 
-    /* Efecto de pantalla antigua (Scanlines y Viñeta) */
-    body::after {
-      content: " ";
-      display: block;
-      position: fixed;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-      z-index: 10000;
-      background-size: 100% 3px, 3px 100%;
-      pointer-events: none;
-    }
-
-    /* Contenedor del Loader tipo consola retro */
+    /* Fondo espacial con sutil malla de puntos y gradiente morado/azul característico */
     #loader {
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, #111b2e 0%, #070a12 100%);
+      background: 
+        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+        linear-gradient(135deg, #090d16 0%, #0f172a 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 9999;
       transition: opacity 0.6s ease, visibility 0.6s;
-      border: 4px solid #1e293b;
     }
 
-    /* Marco estilo terminal/consola de taller */
-    #loader::before {
-      content: "[ SYSTEM INITIALIZING... ]";
-      position: absolute;
-      top: 25px;
-      color: #3b82f6;
-      font-size: 0.85rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      opacity: 0.8;
+    /* Tarjeta flotante estilo panel de la aplicación */
+    .loader-card {
+      position: relative;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 40px 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.1);
     }
 
-    /* Contenedor del Logo con marco retro */
+    /* Contenedor del Logo (Engranaje) con el color de acento exacto */
     .gear-container {
       position: relative;
-      width: 90px;
-      height: 90px;
-      margin-bottom: 25px;
-      background: #0f172a;
-      border: 2px dashed #f59e0b; /* Estilo técnico ámbar */
-      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.35);
     }
 
     .gear {
-      width: 60%;
-      height: 60%;
-      fill: #f59e0b; /* Tono ámbar retro profesional */
-      animation: spin 4s linear infinite;
+      width: 42px;
+      height: 42px;
+      fill: #ffffff;
+      animation: spin 3s linear infinite;
     }
 
     .wrench {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 30%;
-      height: 30%;
-      fill: #e2e8f0;
+      width: 22px;
+      height: 22px;
+      fill: #f8fafc;
       transform: translate(-50%, -50%);
-      animation: pulse 2s ease-in-out infinite;
+      animation: pulse 1.5s ease-in-out infinite;
     }
 
-    /* Texto de carga estilo terminal */
-    .loading-text {
+    /* Texto de carga corporativo y limpio */
+    .loading-title {
       color: #f8fafc;
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
     }
 
-    .loading-subtext {
-      margin-top: 8px;
-      color: #64748b;
-      font-size: 0.8rem;
+    .loading-subtitle {
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 400;
       letter-spacing: 1px;
+      text-transform: uppercase;
     }
 
     .loading-dots:after {
@@ -109,15 +101,15 @@
       animation: dots 1.5s steps(5, end) infinite;
     }
 
-    /* Animaciones fluidas */
+    /* Animaciones */
     @keyframes spin {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
 
     @keyframes pulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-      50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -50%) scale(1.15); }
     }
 
     @keyframes dots {
@@ -150,20 +142,22 @@
 </head>
 <body>
 
-  <!-- Pantalla de Carga Retro Profesional -->
+  <!-- Pantalla de Carga Estilizada -->
   <div id="loader">
-    <div class="gear-container">
-      <!-- Icono de Engranaje SVG -->
-      <svg class="gear" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 15.5C13.93 15.5 15.5 13.93 15.5 12C15.5 10.07 13.93 8.5 12 8.5C10.07 8.5 8.5 10.07 8.5 12C8.5 13.93 10.07 15.5 12 15.5M19.43 12.97C19.47 12.65 19.5 12.33 19.5 12C19.5 11.67 19.47 11.34 19.43 11L21.54 9.37C21.73 9.22 21.78 8.95 21.66 8.73L19.66 5.27C19.54 5.05 19.27 4.97 19.05 5.05L16.56 6.05C16.04 5.65 15.48 5.32 14.87 5.07L14.49 2.42C14.46 2.18 14.25 2 14 2H10C9.75 2 9.54 2.18 9.51 2.42L9.13 5.07C8.52 5.32 7.96 5.66 7.44 6.05L4.95 5.05C4.73 4.97 4.46 5.05 4.34 5.27L2.34 8.73C2.21 8.95 2.27 9.22 2.46 9.37L4.57 11C4.53 11.34 4.5 11.67 4.5 12C4.5 12.33 4.53 12.65 4.57 12.97L2.46 14.63C2.27 14.78 2.21 15.05 2.34 15.27L4.34 18.73C4.46 18.95 4.73 19.03 4.95 18.95L7.44 17.94C7.96 18.34 8.52 18.68 9.13 18.93L9.51 21.58C9.54 21.82 9.75 22 10 22H14C14.25 22 14.46 21.82 14.49 21.58L14.87 18.93C15.48 18.67 16.04 18.34 16.56 17.94L19.05 18.95C19.27 19.03 19.54 18.95 19.66 18.73L21.66 15.27C21.78 15.05 21.73 14.78 21.54 14.63L19.43 12.97Z"/>
-      </svg>
-      <!-- Icono de Llave Inglesa SVG -->
-      <svg class="wrench" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M13.78 12.3L21.5 4.58L19.42 2.5L11.7 10.22L5.42 3.94L2.1 7.26L8.38 13.54L2.5 19.42L4.58 21.5L10.46 15.62L16.74 21.9L20.06 18.58L13.78 12.3Z"/>
-      </svg>
+    <div class="loader-card">
+      <div class="gear-container">
+        <!-- Icono de Engranaje SVG -->
+        <svg class="gear" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 15.5C13.93 15.5 15.5 13.93 15.5 12C15.5 10.07 13.93 8.5 12 8.5C10.07 8.5 8.5 10.07 8.5 12C8.5 13.93 10.07 15.5 12 15.5M19.43 12.97C19.47 12.65 19.5 12.33 19.5 12C19.5 11.67 19.47 11.34 19.43 11L21.54 9.37C21.73 9.22 21.78 8.95 21.66 8.73L19.66 5.27C19.54 5.05 19.27 4.97 19.05 5.05L16.56 6.05C16.04 5.65 15.48 5.32 14.87 5.07L14.49 2.42C14.46 2.18 14.25 2 14 2H10C9.75 2 9.54 2.18 9.51 2.42L9.13 5.07C8.52 5.32 7.96 5.66 7.44 6.05L4.95 5.05C4.73 4.97 4.46 5.05 4.34 5.27L2.34 8.73C2.21 8.95 2.27 9.22 2.46 9.37L4.57 11C4.53 11.34 4.5 11.67 4.5 12C4.5 12.33 4.53 12.65 4.57 12.97L2.46 14.63C2.27 14.78 2.21 15.05 2.34 15.27L4.34 18.73C4.46 18.95 4.73 19.03 4.95 18.95L7.44 17.94C7.96 18.34 8.52 18.68 9.13 18.93L9.51 21.58C9.54 21.82 9.75 22 10 22H14C14.25 22 14.46 21.82 14.49 21.58L14.87 18.93C15.48 18.67 16.04 18.34 16.56 17.94L19.05 18.95C19.27 19.03 19.54 18.95 19.66 18.73L21.66 15.27C21.78 15.05 21.73 14.78 21.54 14.63L19.43 12.97Z"/>
+        </svg>
+        <!-- Icono de Llave Inglesa SVG -->
+        <svg class="wrench" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13.78 12.3L21.5 4.58L19.42 2.5L11.7 10.22L5.42 3.94L2.1 7.26L8.38 13.54L2.5 19.42L4.58 21.5L10.46 15.62L16.74 21.9L20.06 18.58L13.78 12.3Z"/>
+        </svg>
+      </div>
+      <div class="loading-title">TallerTrack</div>
+      <div class="loading-subtitle">Iniciando sistema<span class="loading-dots"></span></div>
     </div>
-    <div class="loading-text">TallerTrack<span class="loading-dots"></span></div>
-    <div class="loading-subtext">Cargando módulos de servicio...</div>
   </div>
 
   <!-- Aplicación Principal -->
